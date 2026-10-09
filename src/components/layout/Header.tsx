@@ -67,16 +67,17 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuickAction, onOpenNotific
               <ChevronDown className="w-3.5 h-3.5 opacity-70" />
             </button>
 
-            {/* Quick Action (Owner Only) */}
-            {isOwner && (
-              <button
-                onClick={onOpenQuickAction}
-                className="flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-xl bg-[#2563EB] hover:bg-blue-600 text-white text-xs sm:text-sm font-semibold transition cursor-pointer shadow-sm shadow-blue-950/40"
-              >
-                <Plus className="w-4 h-4" />
-                <span className="hidden sm:inline">Carga Rápida</span>
-              </button>
-            )}
+            {/* Quick Action (Available for both Owners and Drivers) */}
+            <button
+              onClick={onOpenQuickAction}
+              className="flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-xl bg-[#2563EB] hover:bg-blue-600 text-white text-xs sm:text-sm font-semibold transition cursor-pointer shadow-sm shadow-blue-950/40"
+              title={isOwner ? 'Carga Rápida de Operaciones' : 'Registrar Combustible o Siniestro'}
+            >
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">
+                {isOwner ? 'Carga Rápida' : 'Registrar'}
+              </span>
+            </button>
 
             {/* Notification Bell */}
             <button

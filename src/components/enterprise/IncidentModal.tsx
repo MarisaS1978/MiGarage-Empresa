@@ -14,12 +14,18 @@ export const IncidentModal: React.FC<IncidentModalProps> = ({
   incidentToEdit,
   defaultVehicleId,
 }) => {
-  const { vehicles, drivers, addIncident, updateIncident, isOwner, showToast } = useGarage();
+  const { vehicles, drivers, addIncident, updateIncident, isOwner, currentUser, showToast } = useGarage();
 
   const isEditing = !!incidentToEdit;
 
+  // Find driver's vehicle if logged in as driver
+  const currentDriver = drivers.find((d) => d.id === currentUser.driverId);
+  const driverAssignedVeh = vehicles.find(
+    (v) => v.id === currentDriver?.assignedVehicleId || v.assignedDriverId === currentDriver?.id
+  );
+
   const [vehicleId, setVehicleId] = useState(
-    incidentToEdit?.vehicleId || defaultVehicleId || vehicles[0]?.id || ''
+    incidentToEdit?.vehicleId || defaultVehicleId || driverAssignedVeh?.id || vehicles[0]?.id || ''
   );
   const [date, setDate] = useState(
     incidentToEdit?.date || new Date().toISOString().split('T')[0]
@@ -34,7 +40,9 @@ export const IncidentModal: React.FC<IncidentModalProps> = ({
     incidentToEdit?.status || 'denunciado'
   );
   const [claimNumber, setClaimNumber] = useState(incidentToEdit?.claimNumber || '');
-  const [driverId, setDriverId] = useState(incidentToEdit?.driverId || '');
+  const [driverId, setDriverId] = useState(
+    incidentToEdit?.driverId || currentDriver?.id || ''
+  );
   const [estimatedCost, setEstimatedCost] = useState(incidentToEdit?.estimatedCost || 250000);
   const [daysOutOfService, setDaysOutOfService] = useState(incidentToEdit?.daysOutOfService || 3);
   const [thirdName, setThirdName] = useState(incidentToEdit?.thirdParty?.name || '');
@@ -69,8 +77,8 @@ export const IncidentModal: React.FC<IncidentModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isOwner) {
-      showToast('Solo el propietario puede registrar o editar siniestros.', 'error');
+    if (isEditing && !isOwner) {
+      showToast('Solo el administrador o propietario puede modificar siniestros registrados.', 'error');
       return;
     }
 

@@ -1075,9 +1075,8 @@ export const GarageProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return true;
   };
 
-  // FUEL ACTIONS
+  // FUEL ACTIONS (Allowed for both Owners and Drivers)
   const addFuelLog = (log: Omit<FuelLog, 'id'>): boolean => {
-    if (!requireOwner('registrar combustible')) return false;
     const newLog: FuelLog = {
       ...log,
       id: 'fuel-' + Date.now(),
@@ -1106,7 +1105,7 @@ export const GarageProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     };
     setExpenses((prev) => [newExp, ...prev]);
 
-    showToast('Carga de combustible registrada');
+    showToast('Carga de combustible registrada con éxito');
     return true;
   };
 
@@ -1124,15 +1123,14 @@ export const GarageProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return true;
   };
 
-  // INCIDENT ACTIONS
+  // INCIDENT ACTIONS (Allowed for both Owners and Drivers)
   const addIncident = (inc: Omit<Incident, 'id'>): boolean => {
-    if (!requireOwner('registrar siniestros')) return false;
     const newInc: Incident = {
       ...inc,
       id: 'inc-' + Date.now(),
     };
     setIncidents((prev) => [newInc, ...prev]);
-    showToast('Siniestro registrado en el sistema de flota', 'warning');
+    showToast('Siniestro / Incidente registrado en el sistema de flota', 'warning');
     return true;
   };
 

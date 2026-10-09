@@ -29,14 +29,25 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
     addReminder,
     addIncident,
     drivers,
+    currentUser,
+    isOwner,
+    isDriver,
     showToast,
   } = useGarage();
 
-  const [activeTab, setActiveTab] = useState<'mantenimiento' | 'combustible' | 'recordatorio' | 'siniestro'>(
-    initialAction === 'vehiculo' ? 'mantenimiento' : initialAction
+  const currentDriver = drivers.find((d) => d.id === currentUser.driverId);
+  const driverAssignedVeh = vehicles.find(
+    (v) => v.id === currentDriver?.assignedVehicleId || v.assignedDriverId === currentDriver?.id
   );
 
-  const [selectedVehicleId, setSelectedVehicleId] = useState(vehicles[0]?.id || '');
+  const [activeTab, setActiveTab] = useState<'mantenimiento' | 'combustible' | 'recordatorio' | 'siniestro'>(() => {
+    if (initialAction === 'vehiculo') return isDriver ? 'combustible' : 'mantenimiento';
+    return initialAction;
+  });
+
+  const [selectedVehicleId, setSelectedVehicleId] = useState(
+    driverAssignedVeh?.id || vehicles[0]?.id || ''
+  );
   const activeVehicle = vehicles.find((v) => v.id === selectedVehicleId) || vehicles[0];
 
   // 1. Maintenance form state
@@ -133,6 +144,8 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
       type: incType,
       description: incDescription,
       status: 'denunciado',
+      driverId: currentDriver?.id || activeVehicle.assignedDriverId || undefined,
+      driverName: currentDriver?.name || activeVehicle.assignedDriverName || undefined,
       photosCount: 2,
       thirdParty: incThirdName
         ? {

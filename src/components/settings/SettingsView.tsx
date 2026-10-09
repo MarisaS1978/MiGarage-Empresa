@@ -140,8 +140,17 @@ export const SettingsView: React.FC = () => {
                     Cambiar chofer asignado en el desplegable de unidades (Autorizado)
                   </strong>
                 </li>
-                <li>Bloqueo de creación, edición y borrado de flota</li>
-                <li>Bloqueo de finanzas y datos confidenciales</li>
+                <li>
+                  <strong className="text-blue-700">
+                    Registrar cargas de combustible y odómetro de su unidad (Habilitado)
+                  </strong>
+                </li>
+                <li>
+                  <strong className="text-amber-800">
+                    Denunciar y reportar siniestros o incidentes viales (Habilitado)
+                  </strong>
+                </li>
+                <li>Bloqueo de creación, edición y borrado estructural de flota</li>
               </ul>
             </div>
           </div>

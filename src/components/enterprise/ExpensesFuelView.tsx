@@ -82,8 +82,8 @@ export const ExpensesFuelView: React.FC = () => {
           </p>
         </div>
 
-        {isOwner && (
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
+          {isOwner && (
             <button
               onClick={() => setShowExpenseModal(true)}
               className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold transition cursor-pointer"
@@ -91,15 +91,15 @@ export const ExpensesFuelView: React.FC = () => {
               <Coins className="w-4 h-4" />
               <span>Nuevo Gasto</span>
             </button>
-            <button
-              onClick={() => setShowFuelModal(true)}
-              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold shadow-md shadow-blue-900/20 transition cursor-pointer"
-            >
-              <Fuel className="w-4 h-4" />
-              <span>Cargar Combustible</span>
-            </button>
-          </div>
-        )}
+          )}
+          <button
+            onClick={() => setShowFuelModal(true)}
+            className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold shadow-md shadow-blue-900/20 transition cursor-pointer"
+          >
+            <Fuel className="w-4 h-4" />
+            <span>Cargar Combustible</span>
+          </button>
+        </div>
       </div>
 
       {/* KPI Cards */}

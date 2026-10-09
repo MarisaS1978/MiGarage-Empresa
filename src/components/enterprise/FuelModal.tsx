@@ -14,12 +14,18 @@ export const FuelModal: React.FC<FuelModalProps> = ({
   fuelLogToEdit,
   defaultVehicleId,
 }) => {
-  const { vehicles, addFuelLog, updateFuelLog, isOwner, showToast } = useGarage();
+  const { vehicles, drivers, addFuelLog, updateFuelLog, isOwner, currentUser, showToast } = useGarage();
 
   const isEditing = !!fuelLogToEdit;
 
+  // Find driver's vehicle if logged in as driver
+  const currentDriver = drivers.find((d) => d.id === currentUser.driverId);
+  const driverAssignedVeh = vehicles.find(
+    (v) => v.id === currentDriver?.assignedVehicleId || v.assignedDriverId === currentDriver?.id
+  );
+
   const [vehicleId, setVehicleId] = useState(
-    fuelLogToEdit?.vehicleId || defaultVehicleId || vehicles[0]?.id || ''
+    fuelLogToEdit?.vehicleId || defaultVehicleId || driverAssignedVeh?.id || vehicles[0]?.id || ''
   );
   const [date, setDate] = useState(
     fuelLogToEdit?.date || new Date().toISOString().split('T')[0]
@@ -53,8 +59,8 @@ export const FuelModal: React.FC<FuelModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isOwner) {
-      showToast('Solo el propietario puede registrar o editar cargas de combustible.', 'error');
+    if (isEditing && !isOwner) {
+      showToast('Solo el administrador o propietario puede modificar cargas de combustible anteriores.', 'error');
       return;
     }
 

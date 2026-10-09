@@ -62,15 +62,13 @@ export const IncidentsView: React.FC<IncidentsViewProps> = () => {
           </p>
         </div>
 
-        {isOwner && (
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold shadow-md shadow-amber-900/20 transition cursor-pointer shrink-0"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Denunciar Siniestro</span>
-          </button>
-        )}
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold shadow-md shadow-amber-900/20 transition cursor-pointer shrink-0"
+        >
+          <Plus className="w-4 h-4" />
+          <span>Denunciar Siniestro</span>
+        </button>
       </div>
 
       {/* KPI Cards */}

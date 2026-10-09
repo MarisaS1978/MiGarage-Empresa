@@ -104,7 +104,7 @@ export const UserSwitcherModal: React.FC<UserSwitcherModalProps> = ({
             <strong>• Rol Propietario:</strong> Gestión completa (Crear, editar y eliminar vehículos, choferes, mantenimientos, gastos, talleres, configuración).
           </div>
           <div>
-            <strong>• Rol Chofer:</strong> Consulta autorizada y modificación exclusiva del chofer asignado en el desplegable de vehículos. Botones de alta, edición y eliminación bloqueados.
+            <strong>• Rol Chofer:</strong> Consulta autorizada, modificación del chofer asignado en unidades, y registro directo de cargas de combustible y denuncias de siniestros/incidentes. (Edición y eliminación de flota y finanzas reservada al Propietario).
           </div>
         </div>
 

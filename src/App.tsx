@@ -27,6 +27,7 @@ const MainAppContent: React.FC = () => {
     currentTab,
     selectedVehicleId,
     setSelectedVehicleId,
+    isOwner,
   } = useGarage();
 
   const [showVehicleModal, setShowVehicleModal] = useState(false);
@@ -92,7 +93,7 @@ const MainAppContent: React.FC = () => {
     <div className="min-h-screen bg-[#F3F6FA] text-[#1E293B] flex flex-col antialiased selection:bg-[#2563EB] selection:text-white">
       {/* Top Header */}
       <Header
-        onOpenQuickAction={() => handleOpenQuickAction('mantenimiento')}
+        onOpenQuickAction={() => handleOpenQuickAction(isOwner ? 'mantenimiento' : 'combustible')}
         onOpenNotifications={() => setShowNotificationCenter(true)}
       />
 
