@@ -1,0 +1,152 @@
+import React, { useState } from 'react';
+import { GarageProvider, useGarage } from './context/GarageContext';
+import { Header } from './components/layout/Header';
+import { Sidebar } from './components/layout/Sidebar';
+import { MobileNav } from './components/layout/MobileNav';
+import { ToastContainer } from './components/common/ToastContainer';
+import { VehicleDetailModal } from './components/enterprise/VehicleDetailModal';
+import { VehicleFormModal } from './components/common/VehicleFormModal';
+import { QuickLogModal } from './components/common/QuickLogModal';
+import { NotificationCenterModal } from './components/notifications/NotificationCenterModal';
+
+// Enterprise Views
+import { EnterpriseDashboard } from './components/enterprise/EnterpriseDashboard';
+import { FleetView } from './components/enterprise/FleetView';
+import { DriversView } from './components/enterprise/DriversView';
+import { EnterpriseMaintenanceView } from './components/enterprise/EnterpriseMaintenanceView';
+import { WorkshopsView } from './components/enterprise/WorkshopsView';
+import { ExpensesFuelView } from './components/enterprise/ExpensesFuelView';
+import { InsuranceView } from './components/enterprise/InsuranceView';
+import { DocumentsView } from './components/enterprise/DocumentsView';
+import { IncidentsView } from './components/enterprise/IncidentsView';
+import { ReportsView } from './components/enterprise/ReportsView';
+import { SettingsView } from './components/settings/SettingsView';
+
+const MainAppContent: React.FC = () => {
+  const {
+    currentTab,
+    selectedVehicleId,
+    setSelectedVehicleId,
+  } = useGarage();
+
+  const [showVehicleModal, setShowVehicleModal] = useState(false);
+  const [showNotificationCenter, setShowNotificationCenter] = useState(false);
+  const [quickActionType, setQuickActionType] = useState<
+    'mantenimiento' | 'combustible' | 'recordatorio' | 'siniestro' | 'vehiculo' | null
+  >(null);
+
+  const handleOpenQuickAction = (
+    type: 'mantenimiento' | 'combustible' | 'recordatorio' | 'siniestro' | 'vehiculo' = 'mantenimiento'
+  ) => {
+    if (type === 'vehiculo') {
+      setShowVehicleModal(true);
+    } else {
+      setQuickActionType(type);
+    }
+  };
+
+  const renderActiveView = () => {
+    switch (currentTab) {
+      case 'inicio':
+        return (
+          <EnterpriseDashboard
+            onOpenNotifications={() => setShowNotificationCenter(true)}
+          />
+        );
+      case 'flota':
+        return (
+          <FleetView
+            onOpenVehicleModal={() => setShowVehicleModal(true)}
+            onSelectVehicle={(id) => setSelectedVehicleId(id)}
+          />
+        );
+      case 'conductores':
+        return <DriversView />;
+      case 'mantenimiento':
+        return (
+          <EnterpriseMaintenanceView
+            onOpenQuickAction={() => handleOpenQuickAction('mantenimiento')}
+          />
+        );
+      case 'talleres':
+        return <WorkshopsView />;
+      case 'combustible':
+      case 'gastos':
+        return <ExpensesFuelView />;
+      case 'seguros':
+        return <InsuranceView />;
+      case 'documentos':
+        return <DocumentsView />;
+      case 'siniestros':
+        return <IncidentsView onOpenQuickAction={() => handleOpenQuickAction('siniestro')} />;
+      case 'informes':
+        return <ReportsView />;
+      case 'configuracion':
+        return <SettingsView />;
+      default:
+        return <EnterpriseDashboard onOpenNotifications={() => setShowNotificationCenter(true)} />;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#F3F6FA] text-[#1E293B] flex flex-col antialiased selection:bg-[#2563EB] selection:text-white">
+      {/* Top Header */}
+      <Header
+        onOpenQuickAction={() => handleOpenQuickAction('mantenimiento')}
+        onOpenNotifications={() => setShowNotificationCenter(true)}
+      />
+
+      {/* Main Layout Container */}
+      <div className="flex-1 flex max-w-7xl w-full mx-auto">
+        {/* Desktop Sidebar */}
+        <Sidebar />
+
+        {/* Dynamic Content Area */}
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24 lg:pb-12 overflow-x-hidden min-w-0">
+          {renderActiveView()}
+        </main>
+      </div>
+
+      {/* Mobile Bottom Navigation */}
+      <MobileNav />
+
+      {/* Global Toast Notifications */}
+      <ToastContainer />
+
+      {/* Notification Center Modal */}
+      {showNotificationCenter && (
+        <NotificationCenterModal onClose={() => setShowNotificationCenter(false)} />
+      )}
+
+      {/* Vehicle Ficha Detail Modal */}
+      {selectedVehicleId && (
+        <VehicleDetailModal
+          vehicleId={selectedVehicleId}
+          onClose={() => setSelectedVehicleId(null)}
+          onOpenQuickAction={(action) => handleOpenQuickAction(action)}
+        />
+      )}
+
+      {/* Vehicle Creation / Form Modal */}
+      {showVehicleModal && (
+        <VehicleFormModal onClose={() => setShowVehicleModal(false)} />
+      )}
+
+      {/* Quick Log Modal */}
+      {quickActionType && (
+        <QuickLogModal
+          initialAction={quickActionType}
+          onClose={() => setQuickActionType(null)}
+        />
+      )}
+    </div>
+  );
+};
+
+export default function App() {
+  return (
+    <GarageProvider>
+      <MainAppContent />
+    </GarageProvider>
+  );
+}

@@ -1,0 +1,8 @@
+{
+  "name": "MiGarage",
+  "description": "Sistema integral para gestión de flotas vehiculares, asignación de conductores, mantenimiento, gastos, combustible y control operativo.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
