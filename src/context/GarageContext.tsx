@@ -355,6 +355,54 @@ export const GarageProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     localStorage.setItem('migarage_read_alerts', JSON.stringify(readAlertIds));
   }, [readAlertIds]);
 
+  // Keep availableUsers and currentUser synchronized with driver changes
+  useEffect(() => {
+    const ownerUser = availableUsers.find((u) => u.role === 'propietario') || INITIAL_USERS[0];
+    const driverUsers: AppUser[] = drivers.map((d) => {
+      const existing = availableUsers.find((u) => u.driverId === d.id);
+      const assignedVeh = vehicles.find((v) => v.id === d.assignedVehicleId || v.assignedDriverId === d.id);
+      return {
+        id: existing?.id || `usr-drv-${d.id}`,
+        name: d.name,
+        email: d.email || `${d.name.toLowerCase().replace(/\s+/g, '.')}@flota.com`,
+        role: 'chofer' as const,
+        driverId: d.id,
+        title: assignedVeh
+          ? `Chofer Asignado — ${assignedVeh.brand} ${assignedVeh.model} (${assignedVeh.plate})`
+          : `Chofer — Sin vehículo asignado`,
+        avatarUrl:
+          existing?.avatarUrl ||
+          `https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80`,
+      };
+    });
+    const updated = [ownerUser, ...driverUsers];
+    setAvailableUsers(updated);
+    localStorage.setItem('migarage_users', JSON.stringify(updated));
+
+    if (currentUser.driverId) {
+      const activeDrv = drivers.find((d) => d.id === currentUser.driverId);
+      if (activeDrv) {
+        const assignedVeh = vehicles.find((v) => v.id === activeDrv.assignedVehicleId || v.assignedDriverId === activeDrv.id);
+        setCurrentUserState((prev) => {
+          const newTitle = assignedVeh
+            ? `Chofer Asignado — ${assignedVeh.brand} ${assignedVeh.model} (${assignedVeh.plate})`
+            : `Chofer — Sin vehículo asignado`;
+          if (prev.name !== activeDrv.name || prev.title !== newTitle) {
+            const nextUser = {
+              ...prev,
+              name: activeDrv.name,
+              email: activeDrv.email || prev.email,
+              title: newTitle,
+            };
+            localStorage.setItem('migarage_current_user', JSON.stringify(nextUser));
+            return nextUser;
+          }
+          return prev;
+        });
+      }
+    }
+  }, [drivers, vehicles]);
+
   // Notifications Methods
   const updateNotificationSettings = (updates: Partial<NotificationSettings>) => {
     setNotificationSettings((prev) => ({ ...prev, ...updates }));
