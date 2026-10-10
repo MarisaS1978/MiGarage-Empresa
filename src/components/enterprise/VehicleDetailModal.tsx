@@ -20,10 +20,16 @@ import {
   CheckCircle2,
   AlertCircle,
   ExternalLink,
+  ChevronRight,
+  Phone,
+  Mail,
+  Clock,
+  Sparkles,
 } from 'lucide-react';
 import { ConfirmDeleteModal } from '../common/ConfirmDeleteModal';
 import { VehicleFormModal } from '../common/VehicleFormModal';
 import { QuickAssignDriverModal } from '../common/QuickAssignDriverModal';
+import { DriverDetailModal } from './DriverDetailModal';
 
 interface VehicleDetailModalProps {
   vehicleId: string;
@@ -62,12 +68,13 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
   } = useGarage();
 
   const [activeTab, setActiveTab] = useState<
-    'mantenimiento' | 'gastos' | 'combustible' | 'documentos' | 'seguro' | 'siniestros' | 'recordatorios'
+    'mantenimiento' | 'gastos' | 'combustible' | 'documentos' | 'seguro' | 'siniestros' | 'recordatorios' | 'chofer'
   >('mantenimiento');
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showDriverDetailModal, setShowDriverDetailModal] = useState(false);
 
   // Generic delete modal for sub-items
   const [itemToDelete, setItemToDelete] = useState<{
@@ -90,9 +97,24 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
   const vehFuel = fuelLogs.filter((f) => f.vehicleId === vehicle.id);
   const vehIncidents = incidents.filter((i) => i.vehicleId === vehicle.id);
 
-  // Totals
+  // Totals & Statistics
   const totalSpent = vehExpenses.reduce((sum, e) => sum + e.amount, 0);
   const totalFuelLiters = vehFuel.reduce((sum, f) => sum + f.liters, 0);
+  const totalMaintenanceCost = vehMaintenance.reduce((sum, m) => sum + m.cost, 0);
+  const preventiveServicesCount = vehMaintenance.filter((m) => m.isPreventive).length;
+  const correctiveServicesCount = vehMaintenance.length - preventiveServicesCount;
+
+  // Last and Next estimated service
+  const sortedMaintenance = [...vehMaintenance].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+  const lastMaintenance = sortedMaintenance[0];
+
+  // Estimated next service: vehicle mileage rounded to next 10,000 km or reminder
+  const nextMaintenanceReminder = vehReminders.find(
+    (r) => r.category === 'mantenimiento' || r.title.toLowerCase().includes('service')
+  );
+  const estimatedNextMileage = nextMaintenanceReminder?.dueMileage || Math.ceil((vehicle.currentMileage + 1) / 10000) * 10000;
 
   const relations = checkVehicleRelations(vehicle.id);
 
@@ -149,21 +171,58 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
     warningList.push(`${relations.incidentsCount} siniestro(s) registrados en el historial.`);
   }
 
+  // Driver license expiration calculations if assigned
+  let driverExpStatus = null;
+  if (assignedDriver) {
+    const today = new Date('2026-10-08');
+    const expDate = new Date(assignedDriver.licenseExpiry);
+    const daysLeft = Math.ceil((expDate.getTime() - today.getTime()) / (1000 * 3600 * 24));
+    driverExpStatus = {
+      daysLeft,
+      isExpired: daysLeft <= 0,
+      isExpiringSoon: daysLeft > 0 && daysLeft <= 30,
+    };
+  }
+
   return (
     <>
-      <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 md:p-6 animate-in fade-in duration-150">
-        <div className="relative bg-white rounded-3xl w-full max-w-4xl shadow-2xl border border-slate-200 overflow-hidden max-h-[92vh] flex flex-col my-4">
-          {/* Header Cover Bar */}
-          <div className="bg-[#172554] text-white p-5 sm:p-6 relative">
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer z-10"
-            >
-              <X className="w-5 h-5" />
-            </button>
+      <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/75 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 md:p-6 animate-in fade-in duration-150">
+        <div className="relative bg-white rounded-2xl sm:rounded-3xl w-full max-w-4xl shadow-2xl border border-slate-200 overflow-hidden max-h-[94vh] sm:max-h-[90vh] flex flex-col my-auto">
+          {/* Header Cover Bar - Compact & Responsive */}
+          <div className="bg-[#172554] text-white p-4 sm:p-5 relative shrink-0">
+            {/* Top Close & Main Action Buttons */}
+            <div className="absolute top-3.5 right-3.5 flex items-center gap-1.5 sm:gap-2 z-10">
+              {isOwner && (
+                <>
+                  <button
+                    onClick={() => setShowEditModal(true)}
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold cursor-pointer transition"
+                    title="Editar datos del vehículo"
+                  >
+                    <Edit className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Editar</span>
+                  </button>
+                  <button
+                    onClick={() => setShowDeleteModal(true)}
+                    className="p-1.5 rounded-xl text-rose-300 hover:text-white hover:bg-rose-600/40 cursor-pointer transition"
+                    title="Eliminar unidad"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </>
+              )}
+              <button
+                onClick={onClose}
+                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer"
+                title="Cerrar ficha"
+              >
+                <X className="w-4 h-4 sm:w-5 sm:h-5" />
+              </button>
+            </div>
 
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden bg-slate-800 shrink-0 border-2 border-blue-400/30">
+            {/* Vehicle Main Info Row */}
+            <div className="flex items-start sm:items-center gap-3.5 sm:gap-5 pr-20 sm:pr-24">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-slate-800 shrink-0 border-2 border-blue-400/30 shadow-md">
                 {vehicle.photoUrl ? (
                   <img
                     src={vehicle.photoUrl}
@@ -172,18 +231,18 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-slate-400">
-                    <Truck className="w-10 h-10" />
+                    <Truck className="w-8 h-8 sm:w-10 sm:h-10" />
                   </div>
                 )}
               </div>
 
               <div className="flex-1 min-w-0">
-                <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                  <span className="font-mono text-xs font-bold px-2.5 py-1 rounded bg-black/40 border border-white/20 text-[#DBEAFE]">
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1">
+                  <span className="font-mono text-xs font-extrabold px-2 py-0.5 rounded bg-black/40 border border-white/20 text-[#DBEAFE] tracking-wider">
                     {vehicle.plate}
                   </span>
                   <span
-                    className={`text-xs px-2.5 py-1 rounded-full font-bold ${
+                    className={`text-[11px] sm:text-xs px-2 py-0.5 rounded-full font-bold ${
                       vehicle.fleetStatus === 'disponible'
                         ? 'bg-emerald-900/60 text-emerald-300 border border-emerald-500/40'
                         : vehicle.fleetStatus === 'en_uso'
@@ -198,83 +257,71 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
                       : vehicle.fleetStatus === 'en_uso'
                       ? '🔵 En uso'
                       : vehicle.fleetStatus === 'mantenimiento'
-                      ? '🟡 Mantenimiento'
+                      ? '🟡 En mantenimiento'
                       : '🔴 Fuera de servicio'}
                   </span>
-                  <span className="text-xs text-blue-200">
+                  <span className="text-[11px] sm:text-xs text-blue-200 hidden sm:inline">
                     {vehicle.year} · {vehicle.color} · {vehicle.fuelType.toUpperCase()}
                   </span>
                 </div>
 
-                <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight truncate text-white">
+                <h2 className="text-xl sm:text-2xl font-black tracking-tight truncate text-white leading-tight">
                   {vehicle.brand} {vehicle.model}{' '}
                   {vehicle.version && (
-                    <span className="text-base text-blue-200 font-normal">({vehicle.version})</span>
+                    <span className="text-xs sm:text-sm text-blue-200 font-normal">({vehicle.version})</span>
                   )}
                 </h2>
 
-                <div className="flex flex-wrap items-center gap-4 mt-2 text-xs text-blue-100">
-                  <div className="flex items-center gap-1.5 font-mono font-bold">
-                    <Gauge className="w-4 h-4 text-[#DBEAFE]" />
+                {/* Sub-bar: Mileage, Cost Center & Compact Driver Indicator */}
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1.5 text-xs text-blue-100">
+                  <div className="flex items-center gap-1.5 font-mono font-bold bg-white/10 px-2 py-0.5 rounded-md">
+                    <Gauge className="w-3.5 h-3.5 text-[#DBEAFE]" />
                     <span>{vehicle.currentMileage.toLocaleString('es-AR')} km</span>
                   </div>
+
                   {vehicle.costCenter && (
-                    <span className="bg-blue-800/60 px-2 py-0.5 rounded font-semibold text-blue-100">
+                    <span className="bg-blue-900/60 border border-blue-400/20 px-2 py-0.5 rounded-md font-medium text-[11px] sm:text-xs text-blue-200">
                       🏢 {vehicle.costCenter}
                     </span>
                   )}
+
+                  {/* Compact Driver Tag - Replaces the huge banner taking up half the screen */}
+                  <div className="flex items-center gap-1.5 bg-blue-950/70 border border-blue-400/30 px-2.5 py-0.5 rounded-md text-[11px] sm:text-xs">
+                    <User className="w-3 h-3 text-[#DBEAFE] shrink-0" />
+                    <span className="text-blue-300">Chofer:</span>
+                    {assignedDriver ? (
+                      <span className="font-bold text-white max-w-[120px] sm:max-w-none truncate">
+                        {assignedDriver.name}
+                      </span>
+                    ) : (
+                      <span className="text-slate-400 italic">Sin asignar</span>
+                    )}
+
+                    {assignedDriver ? (
+                      <button
+                        onClick={() => setShowDriverDetailModal(true)}
+                        className="text-blue-300 hover:text-white underline font-semibold text-[10px] ml-1 cursor-pointer"
+                        title="Ver ficha completa del chofer"
+                      >
+                        Ficha
+                      </button>
+                    ) : null}
+
+                    {isOwner && (
+                      <button
+                        onClick={() => setShowAssignModal(true)}
+                        className="text-[10px] bg-[#2563EB] hover:bg-blue-600 text-white px-1.5 py-0.2 rounded font-semibold cursor-pointer transition ml-1"
+                      >
+                        {assignedDriver ? 'Cambiar' : 'Asignar'}
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Quick Actions Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-3 mt-5 pt-3 border-t border-white/10">
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-blue-200">Chofer asignado:</span>
-                <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-white/10 text-white">
-                  {vehicle.assignedDriverName || 'Sin asignar'}
-                </span>
-                <button
-                  onClick={() => setShowAssignModal(true)}
-                  className="px-2.5 py-1 rounded-lg bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-semibold cursor-pointer flex items-center gap-1 transition"
-                  title="Asignar o cambiar chofer"
-                >
-                  <UserCheck className="w-3.5 h-3.5" />
-                  <span>{vehicle.assignedDriverId ? 'Cambiar' : 'Asignar'}</span>
-                </button>
-                {vehicle.assignedDriverId && (
-                  <button
-                    onClick={() => assignDriverToVehicle(vehicle.id, null)}
-                    className="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 text-xs font-semibold cursor-pointer flex items-center gap-1 transition border border-amber-500/30"
-                    title="Desasignar chofer de esta unidad"
-                  >
-                    <span>Desasignar</span>
-                  </button>
-                )}
-              </div>
-
-              {isOwner && (
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setShowEditModal(true)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold cursor-pointer transition"
-                  >
-                    <Edit className="w-3.5 h-3.5" />
-                    <span>Editar Vehículo</span>
-                  </button>
-                  <button
-                    onClick={() => setShowDeleteModal(true)}
-                    className="p-1.5 rounded-xl text-rose-300 hover:text-white hover:bg-rose-600/40 cursor-pointer transition"
-                    title="Eliminar unidad"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Tabs Selector */}
-            <div className="flex items-center gap-1.5 overflow-x-auto mt-4 pt-2 border-t border-white/10 scrollbar-none text-xs font-semibold">
+            {/* Tabs Selector Bar */}
+            <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto mt-3.5 pt-2.5 border-t border-white/10 scrollbar-none text-xs font-semibold">
               {[
                 { id: 'mantenimiento', label: `Mantenimiento (${vehMaintenance.length})`, icon: Wrench },
                 { id: 'gastos', label: `Gastos (${vehExpenses.length})`, icon: Coins },
@@ -283,6 +330,7 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
                 { id: 'seguro', label: 'Seguro', icon: Shield },
                 { id: 'siniestros', label: `Siniestros (${vehIncidents.length})`, icon: AlertTriangle },
                 { id: 'recordatorios', label: `Recordatorios (${vehReminders.length})`, icon: Bell },
+                { id: 'chofer', label: assignedDriver ? `Chofer (${assignedDriver.name.split(' ')[0]})` : 'Chofer', icon: User },
               ].map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -290,13 +338,13 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id as any)}
-                    className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition cursor-pointer flex items-center gap-1.5 ${
+                    className={`px-2.5 sm:px-3 py-1.5 rounded-xl whitespace-nowrap transition cursor-pointer flex items-center gap-1.5 text-xs ${
                       isActive
                         ? 'bg-[#2563EB] text-white font-bold shadow-xs'
                         : 'text-blue-200 hover:text-white hover:bg-white/10'
                     }`}
                   >
-                    <Icon className="w-3.5 h-3.5" />
+                    <Icon className="w-3.5 h-3.5 shrink-0" />
                     <span>{tab.label}</span>
                   </button>
                 );
@@ -304,141 +352,332 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
             </div>
           </div>
 
-          {/* Tab Content Body */}
-          <div className="flex-1 overflow-y-auto p-5 sm:p-6 bg-[#F3F6FA] space-y-4">
-            {/* Persistent Driver Banner */}
-            {assignedDriver ? (
-              <div className="bg-white p-4 rounded-2xl border border-blue-200/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-linear-to-r from-blue-50/60 to-white">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-10 h-10 rounded-xl bg-[#DBEAFE] text-[#172554] font-bold flex items-center justify-center shrink-0 text-sm">
-                    {assignedDriver.name.charAt(0)}
-                  </div>
-                  <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-xs text-[#64748B]">Conductor asignado:</span>
-                      <strong className="text-sm font-bold text-[#172554] truncate">{assignedDriver.name}</strong>
-                      <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                          assignedDriver.status === 'activo'
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : 'bg-amber-100 text-amber-800'
-                        }`}
-                      >
-                        {assignedDriver.status === 'activo' ? 'Activo' : 'En licencia'}
-                      </span>
+          {/* Tab Content Body - Maximized height for maintenance & details */}
+          <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-5 md:p-6 bg-[#F3F6FA] space-y-4">
+            {/* TAB: MANTENIMIENTO */}
+            {activeTab === 'mantenimiento' && (
+              <div className="space-y-3.5">
+                {/* Maintenance Dashboard Overview Bar */}
+                <div className="bg-white p-4 rounded-2xl border border-[#DCE3ED] shadow-xs">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <Wrench className="w-4 h-4 text-[#2563EB]" />
+                        <h3 className="font-extrabold text-[#172554] text-sm sm:text-base">
+                          Historial y Control de Mantenimiento
+                        </h3>
+                      </div>
+                      <p className="text-xs text-[#64748B] mt-0.5">
+                        Intervenciones preventivas, correctivas y plan de servicios para la unidad {vehicle.plate}.
+                      </p>
                     </div>
-                    <div className="text-xs text-[#64748B] flex flex-wrap gap-x-3 gap-y-1 mt-0.5 font-mono">
-                      <span>DNI: {assignedDriver.dni}</span>
-                      <span>Licencia: {assignedDriver.licenseNumber} (Vence {assignedDriver.licenseExpiry})</span>
-                      {assignedDriver.phone && <span>Tel: {assignedDriver.phone}</span>}
+
+                    {onOpenQuickAction && (
+                      <button
+                        onClick={() => onOpenQuickAction('mantenimiento')}
+                        className="flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#2563EB] text-white text-xs font-bold hover:bg-blue-700 cursor-pointer shadow-xs transition shrink-0"
+                      >
+                        <Plus className="w-4 h-4" />
+                        <span>Registrar Service</span>
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Summary Metric Badges */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 pt-3">
+                    <div className="bg-[#F8FAFC] p-2.5 rounded-xl border border-slate-200/60">
+                      <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
+                        Intervenciones
+                      </span>
+                      <div className="font-extrabold text-slate-900 text-base mt-0.5">
+                        {vehMaintenance.length}{' '}
+                        <span className="text-xs font-normal text-slate-500">
+                          ({preventiveServicesCount} prev. / {correctiveServicesCount} corr.)
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="bg-[#F8FAFC] p-2.5 rounded-xl border border-slate-200/60">
+                      <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
+                        Inversión Total
+                      </span>
+                      <div className="font-extrabold font-mono text-[#172554] text-base mt-0.5">
+                        ${totalMaintenanceCost.toLocaleString('es-AR')}
+                      </div>
+                    </div>
+
+                    <div className="bg-[#F8FAFC] p-2.5 rounded-xl border border-slate-200/60">
+                      <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
+                        Último Service
+                      </span>
+                      <div className="font-bold text-slate-800 text-xs mt-0.5 truncate">
+                        {lastMaintenance ? (
+                          <>
+                            <span>{lastMaintenance.date}</span>
+                            <span className="text-[11px] text-slate-500 block font-mono">
+                              {lastMaintenance.mileage.toLocaleString('es-AR')} km
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-slate-400 font-normal">Sin historial</span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="bg-[#F8FAFC] p-2.5 rounded-xl border border-slate-200/60">
+                      <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
+                        Próximo Service Sug.
+                      </span>
+                      <div className="font-bold text-blue-700 text-xs mt-0.5">
+                        <span className="font-mono">{estimatedNextMileage.toLocaleString('es-AR')} km</span>
+                        <span className="text-[11px] text-blue-500 block">
+                          (en {(Math.max(0, estimatedNextMileage - vehicle.currentMileage)).toLocaleString('es-AR')} km)
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
-                  <button
-                    onClick={() => setShowAssignModal(true)}
-                    className="px-3 py-1.5 rounded-xl bg-[#DBEAFE] hover:bg-blue-100 text-[#2563EB] text-xs font-semibold cursor-pointer transition flex items-center gap-1"
-                  >
-                    <UserCheck className="w-3.5 h-3.5" />
-                    <span>Cambiar</span>
-                  </button>
-                  <button
-                    onClick={() => assignDriverToVehicle(vehicle.id, null)}
-                    className="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-semibold cursor-pointer transition border border-amber-200"
-                  >
-                    Desasignar
-                  </button>
+                {/* Maintenance Records List */}
+                <div className="space-y-2.5">
+                  {vehMaintenance.length === 0 ? (
+                    <div className="text-center py-12 px-4 bg-white rounded-2xl border border-dashed border-[#DCE3ED]">
+                      <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#2563EB] mx-auto flex items-center justify-center mb-3">
+                        <Wrench className="w-6 h-6" />
+                      </div>
+                      <h4 className="font-bold text-slate-800 text-sm">
+                        No hay mantenimientos registrados aún
+                      </h4>
+                      <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1 mb-4">
+                        Registrá el primer service o reparación para llevar un control estricto de kilometrajes, costos y talleres.
+                      </p>
+                      {onOpenQuickAction && (
+                        <button
+                          onClick={() => onOpenQuickAction('mantenimiento')}
+                          className="px-4 py-2 bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-bold rounded-xl cursor-pointer shadow-xs inline-flex items-center gap-1.5"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          <span>Registrar Primer Service</span>
+                        </button>
+                      )}
+                    </div>
+                  ) : (
+                    sortedMaintenance.map((m) => (
+                      <div
+                        key={m.id}
+                        className="bg-white p-3.5 sm:p-4 rounded-2xl border border-[#DCE3ED] hover:border-blue-300 transition shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                      >
+                        <div className="space-y-1 min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="font-bold text-[#172554] text-xs uppercase tracking-wide">
+                              {m.type}
+                            </span>
+                            <span className="text-[11px] text-[#64748B] font-mono bg-slate-100 px-2 py-0.5 rounded">
+                              📅 {m.date}
+                            </span>
+                            <span className="text-[11px] text-blue-900 font-mono font-bold bg-[#DBEAFE] px-2 py-0.5 rounded">
+                              🏎️ {m.mileage.toLocaleString('es-AR')} km
+                            </span>
+                            {m.isPreventive ? (
+                              <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">
+                                Preventivo
+                              </span>
+                            ) : (
+                              <span className="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-bold">
+                                Correctivo
+                              </span>
+                            )}
+                          </div>
+
+                          <p className="text-xs text-slate-800 font-medium leading-relaxed">
+                            {m.description}
+                          </p>
+
+                          <div className="text-[11px] text-[#64748B] flex flex-wrap gap-x-3 gap-y-1 pt-0.5">
+                            <span>
+                              Taller: <strong className="text-slate-700">{m.workshop}</strong>
+                            </span>
+                            {m.invoiceNumber && (
+                              <span className="font-mono">Factura: {m.invoiceNumber}</span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between sm:justify-end gap-3 self-stretch sm:self-center pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 shrink-0">
+                          <span className="font-mono font-black text-base text-[#172554]">
+                            ${m.cost.toLocaleString('es-AR')}
+                          </span>
+                          {isOwner && (
+                            <button
+                              onClick={() =>
+                                setItemToDelete({
+                                  type: 'mantenimiento',
+                                  id: m.id,
+                                  title: `Mantenimiento ${m.type.toUpperCase()}`,
+                                  subtitle: `${m.date} — $${m.cost.toLocaleString('es-AR')}`,
+                                })
+                              }
+                              className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg cursor-pointer transition hover:bg-rose-50"
+                              title="Eliminar registro"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
-              </div>
-            ) : (
-              <div className="bg-white p-3.5 rounded-2xl border border-dashed border-[#DCE3ED] flex items-center justify-between gap-3 text-xs">
-                <div className="flex items-center gap-2 text-slate-500">
-                  <User className="w-4 h-4 text-slate-400" />
-                  <span>Esta unidad no tiene chofer asignado actualmente.</span>
-                </div>
-                <button
-                  onClick={() => setShowAssignModal(true)}
-                  className="px-3 py-1.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-semibold cursor-pointer transition flex items-center gap-1 shadow-xs"
-                >
-                  <UserCheck className="w-3.5 h-3.5" />
-                  <span>Asignar Chofer</span>
-                </button>
               </div>
             )}
-            {/* TAB: MANTENIMIENTO */}
-            {activeTab === 'mantenimiento' && (
-              <div className="space-y-3">
+
+            {/* TAB: CHOFER (Dedicated driver view that doesn't push maintenance away) */}
+            {activeTab === 'chofer' && (
+              <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="font-bold text-[#172554] text-sm">Historial de Mantenimiento</h3>
-                    <p className="text-xs text-[#64748B]">Intervenciones, services y reparaciones.</p>
+                    <h3 className="font-bold text-[#172554] text-sm sm:text-base">
+                      Chofer Asignado a esta Unidad
+                    </h3>
+                    <p className="text-xs text-[#64748B]">
+                      Detalle del conductor responsable de la unidad {vehicle.plate}.
+                    </p>
                   </div>
-                  {isOwner && onOpenQuickAction && (
+                  {isOwner && (
                     <button
-                      onClick={() => onOpenQuickAction('mantenimiento')}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#2563EB] text-white text-xs font-semibold hover:bg-blue-700 cursor-pointer shadow-xs"
+                      onClick={() => setShowAssignModal(true)}
+                      className="px-3 py-1.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-bold cursor-pointer transition flex items-center gap-1.5 shadow-xs"
                     >
-                      <Plus className="w-3.5 h-3.5" />
-                      <span>Registrar Service</span>
+                      <UserCheck className="w-3.5 h-3.5" />
+                      <span>{assignedDriver ? 'Cambiar Chofer' : 'Asignar Chofer'}</span>
                     </button>
                   )}
                 </div>
 
-                {vehMaintenance.length === 0 ? (
-                  <div className="text-center py-8 text-xs text-slate-500 bg-white rounded-2xl border border-[#DCE3ED]">
-                    No hay intervenciones registradas para este vehículo.
-                  </div>
-                ) : (
-                  vehMaintenance.map((m) => (
-                    <div
-                      key={m.id}
-                      className="bg-white p-4 rounded-2xl border border-[#DCE3ED] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-                    >
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-[#1E293B] text-xs uppercase tracking-wide">
-                            {m.type}
-                          </span>
-                          <span className="text-[11px] text-[#64748B] font-mono">
-                            {m.date} · {m.mileage.toLocaleString('es-AR')} km
-                          </span>
-                          {m.isPreventive && (
-                            <span className="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full font-bold">
-                              Preventivo
-                            </span>
-                          )}
+                {assignedDriver ? (
+                  <div className="bg-white p-5 rounded-2xl border border-blue-200/80 shadow-xs space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                      <div className="flex items-center gap-3.5">
+                        <div className="w-14 h-14 rounded-2xl bg-[#DBEAFE] text-[#172554] font-black text-xl flex items-center justify-center shrink-0 border border-blue-300">
+                          {assignedDriver.name.charAt(0)}
                         </div>
-                        <p className="text-xs text-[#1E293B]">{m.description}</p>
-                        <div className="text-[11px] text-[#64748B]">
-                          Taller: <strong>{m.workshop}</strong>
-                          {m.invoiceNumber && ` · Factura: ${m.invoiceNumber}`}
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h4 className="text-base font-extrabold text-[#172554]">
+                              {assignedDriver.name}
+                            </h4>
+                            <span
+                              className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                assignedDriver.status === 'activo'
+                                  ? 'bg-emerald-100 text-emerald-800'
+                                  : 'bg-amber-100 text-amber-800'
+                              }`}
+                            >
+                              {assignedDriver.status === 'activo' ? 'Activo' : 'En licencia'}
+                            </span>
+                          </div>
+                          <div className="text-xs text-[#64748B] flex flex-wrap gap-x-3 gap-y-1 mt-1">
+                            <span>DNI: {assignedDriver.dni}</span>
+                            {assignedDriver.phone && <span>Tel: {assignedDriver.phone}</span>}
+                            {assignedDriver.email && <span>Email: {assignedDriver.email}</span>}
+                          </div>
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between sm:justify-end gap-3 self-stretch sm:self-center pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
-                        <span className="font-mono font-black text-sm text-[#172554]">
-                          ${m.cost.toLocaleString('es-AR')}
-                        </span>
+                      <div className="flex items-center gap-2 self-end sm:self-center">
+                        <button
+                          onClick={() => setShowDriverDetailModal(true)}
+                          className="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-[#2563EB] text-xs font-semibold cursor-pointer transition flex items-center gap-1"
+                        >
+                          <span>Ficha Completa</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </button>
                         {isOwner && (
                           <button
-                            onClick={() =>
-                              setItemToDelete({
-                                type: 'mantenimiento',
-                                id: m.id,
-                                title: `Mantenimiento ${m.type.toUpperCase()}`,
-                                subtitle: `${m.date} — $${m.cost.toLocaleString('es-AR')}`,
-                              })
-                            }
-                            className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg cursor-pointer transition"
-                            title="Eliminar registro"
+                            onClick={() => assignDriverToVehicle(vehicle.id, null)}
+                            className="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-semibold cursor-pointer transition border border-amber-200"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            Desasignar
                           </button>
                         )}
                       </div>
                     </div>
-                  ))
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                      <div className="bg-[#F8FAFC] p-3 rounded-xl border border-slate-200/60">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                          Licencia de Conducir
+                        </span>
+                        <div className="font-mono font-bold text-slate-900 mt-1">
+                          {assignedDriver.licenseNumber}
+                        </div>
+                        <div className="text-[11px] text-slate-500 mt-0.5">
+                          Categoría: {assignedDriver.licenseCategory}
+                        </div>
+                      </div>
+
+                      <div className="bg-[#F8FAFC] p-3 rounded-xl border border-slate-200/60">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                          Vencimiento de Licencia
+                        </span>
+                        <div className="font-mono font-bold text-slate-900 mt-1">
+                          {assignedDriver.licenseExpiry}
+                        </div>
+                        {driverExpStatus && (
+                          <div className="mt-1">
+                            {driverExpStatus.isExpired ? (
+                              <span className="text-[10px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full inline-block">
+                                ⚠️ Licencia Vencida
+                              </span>
+                            ) : driverExpStatus.isExpiringSoon ? (
+                              <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full inline-block">
+                                ⏳ Vence en {driverExpStatus.daysLeft} días
+                              </span>
+                            ) : (
+                              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full inline-block">
+                                ✓ Vigente ({driverExpStatus.daysLeft} días)
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="bg-[#F8FAFC] p-3 rounded-xl border border-slate-200/60">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                          Canal de Contacto
+                        </span>
+                        <div className="font-bold text-slate-900 mt-1 truncate">
+                          {assignedDriver.phone || 'Sin teléfono'}
+                        </div>
+                        <div className="text-[11px] text-slate-500 mt-0.5 truncate">
+                          {assignedDriver.email || 'Sin correo registrado'}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bg-white p-8 rounded-2xl border border-dashed border-[#DCE3ED] text-center space-y-3">
+                    <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 mx-auto flex items-center justify-center">
+                      <User className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-slate-800 text-sm">
+                        Unidad sin chofer asignado
+                      </h4>
+                      <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1">
+                        Esta unidad se encuentra disponible en la flota y no tiene ningún conductor vinculado actualmente.
+                      </p>
+                    </div>
+                    {isOwner && (
+                      <button
+                        onClick={() => setShowAssignModal(true)}
+                        className="px-4 py-2 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-semibold text-xs cursor-pointer transition shadow-xs inline-flex items-center gap-1.5"
+                      >
+                        <UserCheck className="w-4 h-4" />
+                        <span>Asignar Chofer a {vehicle.plate}</span>
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
             )}
@@ -519,7 +758,7 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
                       Litros totales cargados: <strong className="text-slate-900">{totalFuelLiters} L</strong>
                     </p>
                   </div>
-                  {isOwner && onOpenQuickAction && (
+                  {onOpenQuickAction && (
                     <button
                       onClick={() => onOpenQuickAction('combustible')}
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#2563EB] text-white text-xs font-semibold hover:bg-blue-700 cursor-pointer shadow-xs"
@@ -650,7 +889,7 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <span className="text-[#64748B]">Cobertura:</span>
                         <div className="font-semibold text-slate-900 mt-0.5">
@@ -690,7 +929,7 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <h3 className="font-bold text-[#172554] text-sm">Historial de Siniestros</h3>
-                  {isOwner && onOpenQuickAction && (
+                  {onOpenQuickAction && (
                     <button
                       onClick={() => onOpenQuickAction('siniestro')}
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-600 text-white text-xs font-semibold hover:bg-amber-700 cursor-pointer shadow-xs"
@@ -776,6 +1015,13 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
         <QuickAssignDriverModal
           vehicle={vehicle}
           onClose={() => setShowAssignModal(false)}
+        />
+      )}
+
+      {showDriverDetailModal && assignedDriver && (
+        <DriverDetailModal
+          driverId={assignedDriver.id}
+          onClose={() => setShowDriverDetailModal(false)}
         />
       )}
 
