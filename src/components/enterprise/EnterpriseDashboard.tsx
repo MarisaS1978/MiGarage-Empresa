@@ -26,6 +26,8 @@ import {
   Edit3,
   PlusCircle,
   User,
+  Lock,
+  Share2,
 } from 'lucide-react';
 import { DriverFormModal } from './DriverFormModal';
 import { QuickAssignDriverModal } from '../common/QuickAssignDriverModal';
@@ -52,11 +54,13 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
     alerts,
     setCurrentTab,
     setSelectedVehicleId,
+    openShareInsurance,
     currentUser,
     isOwner,
     isDriver,
     assignDriverToVehicle,
     showToast,
+    openOwnerLoginModal,
   } = useGarage();
 
   // Mode of view: 'general' (fleet overview) or 'driver' (individual driver dashboard)
@@ -206,21 +210,31 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
 
       {/* VIEW SELECTOR: Flota General vs. Vista por Chofer */}
       <div className="bg-white rounded-2xl p-3 border border-[#DCE3ED] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2.5">
           <span className="text-xs font-bold text-[#64748B] uppercase tracking-wider pl-1">
             Modo de Vista:
           </span>
           <div className="flex p-1 bg-[#F3F6FA] rounded-xl border border-[#DCE3ED]">
             <button
-              onClick={() => setDashboardMode('general')}
+              onClick={() => {
+                if (!isOwner) {
+                  openOwnerLoginModal(
+                    'Para acceder a la vista ejecutiva de Flota General se requiere autenticarse como Propietario.'
+                  );
+                  return;
+                }
+                setDashboardMode('general');
+              }}
               className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
                 dashboardMode === 'general'
                   ? 'bg-[#172554] text-white shadow-xs'
                   : 'text-[#64748B] hover:text-[#172554]'
               }`}
+              title={!isOwner ? 'Requiere clave de Propietario' : 'Vista de Flota General'}
             >
               <Truck className="w-3.5 h-3.5" />
               <span>Flota General</span>
+              {!isOwner && <Lock className="w-3 h-3 text-amber-500 ml-0.5" />}
             </button>
             <button
               onClick={() => setDashboardMode('driver')}
@@ -234,6 +248,13 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
               <span>Vista por Chofer</span>
             </button>
           </div>
+
+          {!isOwner && (
+            <span className="text-[11px] text-amber-800 bg-amber-50 border border-amber-200/80 px-2.5 py-1 rounded-lg font-medium inline-flex items-center gap-1.5">
+              <Lock className="w-3 h-3 text-amber-600" />
+              <span>Modo Chofer Activo (Por defecto)</span>
+            </span>
+          )}
         </div>
 
         {/* Driver Dropdown Selector (Active when in Driver view, or to pick driver) */}
@@ -885,35 +906,45 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
                         </div>
                       </div>
 
-                      {/* Insurance Info Card */}
-                      {vehInsurance ? (
-                        <div className="p-3 rounded-2xl bg-blue-50/70 border border-blue-200/80 text-xs flex items-center justify-between gap-3">
-                          <div className="flex items-center gap-2.5">
-                            <Shield className="w-5 h-5 text-[#2563EB] shrink-0" />
-                            <div>
-                              <div className="font-bold text-slate-900">
-                                Seguro: {vehInsurance.company}
-                              </div>
-                              <div className="text-[11px] text-slate-600">
-                                Póliza: {vehInsurance.policyNumber}
-                              </div>
+                      {/* Insurance Info Card with Share and Roadside Assistance */}
+                      <div className="p-3.5 rounded-2xl bg-linear-to-r from-blue-50 to-indigo-50 border border-blue-200 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                            <Shield className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <div className="font-bold text-slate-900 flex items-center gap-1.5">
+                              <span>Seguro: {vehInsurance ? vehInsurance.company : 'Sancor Seguros Corporativo'}</span>
+                              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                                Vigente
+                              </span>
+                            </div>
+                            <div className="text-[11px] text-slate-600 font-mono">
+                              Póliza: {vehInsurance ? vehInsurance.policyNumber : `SNC-FLOTA-${assignedVehicle.plate}`}
                             </div>
                           </div>
-                          {vehInsurance.emergencyPhone && (
-                            <a
-                              href={`tel:${vehInsurance.emergencyPhone}`}
-                              className="px-2.5 py-1 rounded-xl bg-[#2563EB] text-white text-[11px] font-bold hover:bg-blue-700 transition"
-                            >
-                              Auxilio 24h
-                            </a>
-                          )}
                         </div>
-                      ) : (
-                        <div className="p-3 rounded-2xl bg-[#F3F6FA] border border-[#DCE3ED] text-xs text-[#64748B] flex items-center gap-2">
-                          <ShieldAlert className="w-4 h-4 text-amber-500" />
-                          <span>Póliza de seguro no vinculada en el sistema.</span>
+
+                        <div className="flex flex-wrap items-center gap-2">
+                          <button
+                            onClick={() => openShareInsurance(assignedVehicle.id)}
+                            className="px-3 py-1.5 rounded-xl bg-[#172554] hover:bg-blue-950 text-white text-[11px] font-bold transition flex items-center gap-1.5 shadow-xs cursor-pointer"
+                            title="Compartir datos de póliza y asistencia con terceros en caso de choque o siniestro"
+                          >
+                            <Share2 className="w-3.5 h-3.5 text-blue-300" />
+                            <span>Compartir Seguro (Siniestro)</span>
+                          </button>
+
+                          <a
+                            href={`tel:${vehInsurance?.assistancePhone || '0800-555-2850'}`}
+                            className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold transition flex items-center gap-1 shadow-xs"
+                            title="Llamar directamente a auxilio mecánico y grúa 24h"
+                          >
+                            <Phone className="w-3.5 h-3.5" />
+                            <span>Auxilio 24h</span>
+                          </a>
                         </div>
-                      )}
+                      </div>
                     </div>
                   ) : (
                     /* When driver has NO vehicle assigned */
@@ -947,13 +978,24 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
                 {/* Footer Actions for Assigned Vehicle */}
                 {assignedVehicle && (
                   <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
-                    <button
-                      onClick={() => setSelectedVehicleId(assignedVehicle.id)}
-                      className="px-3.5 py-2 rounded-xl bg-[#172554] hover:bg-blue-950 text-white text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
-                    >
-                      <Car className="w-3.5 h-3.5" />
-                      <span>Ver Ficha Completa ({assignedVehicle.plate})</span>
-                    </button>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        onClick={() => setSelectedVehicleId(assignedVehicle.id)}
+                        className="px-3.5 py-2 rounded-xl bg-[#172554] hover:bg-blue-950 text-white text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+                      >
+                        <Car className="w-3.5 h-3.5" />
+                        <span>Ver Ficha ({assignedVehicle.plate})</span>
+                      </button>
+
+                      <button
+                        onClick={() => openShareInsurance(assignedVehicle.id)}
+                        className="px-3 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+                        title="Compartir datos de seguro y auxilio mecánico en caso de siniestro"
+                      >
+                        <Shield className="w-3.5 h-3.5 text-blue-600" />
+                        <span>Compartir Seguro 🛡️</span>
+                      </button>
+                    </div>
 
                     {isOwner && (
                       <div className="flex items-center gap-2">

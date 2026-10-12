@@ -15,10 +15,21 @@ import {
   BarChart3,
   Store,
   AlertTriangle,
+  Lock,
+  LogOut,
 } from 'lucide-react';
 
 export const MobileNav: React.FC = () => {
-  const { currentTab, setCurrentTab, vehicles, incidents, currentUser } = useGarage();
+  const {
+    currentTab,
+    setCurrentTab,
+    vehicles,
+    incidents,
+    currentUser,
+    isOwner,
+    openOwnerLoginModal,
+    logoutOwner,
+  } = useGarage();
   const [showDrawer, setShowDrawer] = useState(false);
 
   const activeIncidentsCount = incidents.filter(
@@ -40,7 +51,7 @@ export const MobileNav: React.FC = () => {
             onClick={() => setShowDrawer(false)}
           />
           <div className="relative bg-[#172554] border-t border-blue-900 rounded-t-3xl p-5 pb-8 shadow-2xl z-10 max-h-[85vh] overflow-y-auto text-white">
-            <div className="flex items-center justify-between pb-3 border-b border-blue-900/60 mb-4">
+            <div className="flex items-center justify-between pb-3 border-b border-blue-900/60 mb-3">
               <div className="flex items-center gap-2">
                 <Truck className="w-5 h-5 text-[#2563EB]" />
                 <h3 className="font-bold text-base text-white">Menú de Flota</h3>
@@ -51,6 +62,35 @@ export const MobileNav: React.FC = () => {
               >
                 <X className="w-4 h-4" />
               </button>
+            </div>
+
+            {/* Mobile Owner Mode Switcher */}
+            <div className="mb-4">
+              {!isOwner ? (
+                <button
+                  onClick={() => {
+                    setShowDrawer(false);
+                    openOwnerLoginModal(
+                      'Ingresá tu contraseña de Propietario para desbloquear el panel completo.'
+                    );
+                  }}
+                  className="w-full py-2.5 px-3.5 rounded-2xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-400/40 text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                >
+                  <Lock className="w-4 h-4 text-amber-300" />
+                  <span>Ingresar como Propietario</span>
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    logoutOwner();
+                    setShowDrawer(false);
+                  }}
+                  className="w-full py-2 px-3.5 rounded-2xl bg-white/10 hover:bg-rose-500/30 text-rose-200 border border-rose-400/30 text-xs font-semibold transition flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <LogOut className="w-4 h-4 text-rose-300" />
+                  <span>Cerrar Sesión Propietario (Salir a Chofer)</span>
+                </button>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-2.5">

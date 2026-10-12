@@ -17,14 +17,22 @@ import {
   ChevronRight,
   UserCheck,
   CheckCircle2,
+  Shield,
 } from 'lucide-react';
 import { DriverFormModal } from './DriverFormModal';
 import { DriverDetailModal } from './DriverDetailModal';
 import { ConfirmDeleteModal } from '../common/ConfirmDeleteModal';
 
 export const DriversView: React.FC = () => {
-  const { drivers, vehicles, deleteDriver, checkDriverRelations, isOwner, setSelectedVehicleId } =
-    useGarage();
+  const {
+    drivers,
+    vehicles,
+    deleteDriver,
+    checkDriverRelations,
+    openShareInsurance,
+    isOwner,
+    setSelectedVehicleId,
+  } = useGarage();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDriverId, setSelectedDriverId] = useState<string | null>(null);
@@ -201,7 +209,11 @@ export const DriversView: React.FC = () => {
                   {/* Assigned vehicle pill */}
                   {assignedVehicle ? (
                     <div className="mt-2 bg-[#F3F6FA] p-2.5 rounded-xl border border-[#DCE3ED] flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2 truncate">
+                      <div
+                        onClick={() => setSelectedVehicleId(assignedVehicle.id)}
+                        className="flex items-center gap-2 truncate cursor-pointer hover:text-[#2563EB] transition"
+                        title="Ver ficha del vehículo"
+                      >
                         <Truck className="w-4 h-4 text-[#2563EB] shrink-0" />
                         <span className="text-slate-800 text-xs truncate">
                           {assignedVehicle.brand} {assignedVehicle.model}{' '}
@@ -210,9 +222,18 @@ export const DriversView: React.FC = () => {
                           </strong>
                         </span>
                       </div>
-                      <span className="text-[10px] font-bold bg-[#DBEAFE] text-blue-900 px-2 py-0.5 rounded shrink-0">
-                        Asignado
-                      </span>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <button
+                          onClick={() => openShareInsurance(assignedVehicle.id)}
+                          className="p-1 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-700 transition cursor-pointer"
+                          title="Compartir datos de seguro y auxilio mecánico"
+                        >
+                          <Shield className="w-3.5 h-3.5" />
+                        </button>
+                        <span className="text-[10px] font-bold bg-[#DBEAFE] text-blue-900 px-2 py-0.5 rounded">
+                          Asignado
+                        </span>
+                      </div>
                     </div>
                   ) : (
                     <div className="mt-2 bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-slate-400 text-[11px] italic">

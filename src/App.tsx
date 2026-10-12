@@ -8,6 +8,8 @@ import { VehicleDetailModal } from './components/enterprise/VehicleDetailModal';
 import { VehicleFormModal } from './components/common/VehicleFormModal';
 import { QuickLogModal } from './components/common/QuickLogModal';
 import { NotificationCenterModal } from './components/notifications/NotificationCenterModal';
+import { OwnerLoginModal } from './components/common/OwnerLoginModal';
+import { ShareInsuranceModal } from './components/enterprise/ShareInsuranceModal';
 
 // Enterprise Views
 import { EnterpriseDashboard } from './components/enterprise/EnterpriseDashboard';
@@ -28,6 +30,11 @@ const MainAppContent: React.FC = () => {
     selectedVehicleId,
     setSelectedVehicleId,
     isOwner,
+    showOwnerLoginModal,
+    setShowOwnerLoginModal,
+    ownerLoginReason,
+    shareInsuranceVehicleId,
+    closeShareInsurance,
   } = useGarage();
 
   const [showVehicleModal, setShowVehicleModal] = useState(false);
@@ -138,6 +145,26 @@ const MainAppContent: React.FC = () => {
         <QuickLogModal
           initialAction={quickActionType}
           onClose={() => setQuickActionType(null)}
+        />
+      )}
+
+      {/* Owner Authentication Modal */}
+      {showOwnerLoginModal && (
+        <OwnerLoginModal
+          isOpen={showOwnerLoginModal}
+          onClose={() => setShowOwnerLoginModal(false)}
+          reason={ownerLoginReason}
+        />
+      )}
+
+      {/* Share Insurance & Accident Assistance Modal */}
+      {shareInsuranceVehicleId && (
+        <ShareInsuranceModal
+          vehicleId={shareInsuranceVehicleId}
+          onClose={closeShareInsurance}
+          onOpenReportIncident={(vehId) => {
+            handleOpenQuickAction('siniestro');
+          }}
         />
       )}
     </div>

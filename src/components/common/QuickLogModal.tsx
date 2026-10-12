@@ -9,6 +9,7 @@ import {
   AlertTriangle,
   X,
   Plus,
+  Shield,
 } from 'lucide-react';
 
 interface QuickLogModalProps {
@@ -28,6 +29,7 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
     addExpense,
     addReminder,
     addIncident,
+    openShareInsurance,
     drivers,
     currentUser,
     isOwner,
@@ -498,7 +500,20 @@ export const QuickLogModal: React.FC<QuickLogModalProps> = ({
               </div>
 
               <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-                <span className="font-bold text-slate-900 block">Tercero involucrado (opcional)</span>
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-slate-900 block">Tercero involucrado (opcional)</span>
+                  {activeVehicle && (
+                    <button
+                      type="button"
+                      onClick={() => openShareInsurance(activeVehicle.id)}
+                      className="text-[11px] font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 cursor-pointer transition"
+                      title="Compartir datos de seguro y auxilio mecánico"
+                    >
+                      <Shield className="w-3.5 h-3.5 text-blue-600" />
+                      <span>Compartir mi Seguro</span>
+                    </button>
+                  )}
+                </div>
                 <div className="grid grid-cols-2 gap-2">
                   <input
                     type="text"

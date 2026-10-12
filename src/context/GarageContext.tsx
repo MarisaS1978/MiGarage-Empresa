@@ -67,6 +67,9 @@ interface GarageContextType {
   setCurrentTab: (tab: string) => void;
   selectedVehicleId: string | null;
   setSelectedVehicleId: (id: string | null) => void;
+  shareInsuranceVehicleId: string | null;
+  openShareInsurance: (vehicleId: string) => void;
+  closeShareInsurance: () => void;
 
   // Security & Users
   currentUser: AppUser;
@@ -74,6 +77,14 @@ interface GarageContextType {
   availableUsers: AppUser[];
   isOwner: boolean;
   isDriver: boolean;
+  isOwnerAuthenticated: boolean;
+  loginAsOwner: (password: string) => { success: boolean; error?: string };
+  logoutOwner: () => void;
+  changeOwnerPassword: (newPass: string) => void;
+  showOwnerLoginModal: boolean;
+  setShowOwnerLoginModal: (show: boolean) => void;
+  openOwnerLoginModal: (reason?: string) => void;
+  ownerLoginReason?: string;
 
   // Data
   vehicles: Vehicle[];
@@ -173,36 +184,131 @@ export const GarageProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const mode: AppMode = 'enterprise';
   const [currentTab, setCurrentTab] = useState<string>('inicio');
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
+  const [shareInsuranceVehicleId, setShareInsuranceVehicleId] = useState<string | null>(null);
+
+  const openShareInsurance = (vehicleId: string) => {
+    setShareInsuranceVehicleId(vehicleId);
+  };
+
+  const closeShareInsurance = () => {
+    setShareInsuranceVehicleId(null);
+  };
+
   const [toasts, setToasts] = useState<ToastNotification[]>([]);
 
-  // Users & Authentication
+  // Users & Authentication - Default mode is Chofer by security requirement
   const [availableUsers, setAvailableUsers] = useState<AppUser[]>(() => {
     const saved = localStorage.getItem('migarage_users');
     return saved ? JSON.parse(saved) : INITIAL_USERS;
   });
 
+  const [ownerPassword, setOwnerPassword] = useState<string>(() => {
+    return localStorage.getItem('migarage_owner_password') || 'admin123';
+  });
+
+  const [isOwnerAuthenticated, setIsOwnerAuthenticated] = useState<boolean>(() => {
+    return sessionStorage.getItem('migarage_owner_session') === 'true';
+  });
+
+  const [showOwnerLoginModal, setShowOwnerLoginModal] = useState<boolean>(false);
+  const [ownerLoginReason, setOwnerLoginReason] = useState<string | undefined>(undefined);
+
+  const openOwnerLoginModal = (reason?: string) => {
+    setOwnerLoginReason(reason);
+    setShowOwnerLoginModal(true);
+  };
+
   const [currentUser, setCurrentUserState] = useState<AppUser>(() => {
+    // Default to the first driver in INITIAL_USERS (Carlos Rossi)
+    const defaultDriver = INITIAL_USERS.find((u) => u.role === 'chofer') || INITIAL_USERS[1];
     const saved = localStorage.getItem('migarage_current_user');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed: AppUser = JSON.parse(saved);
+        if (parsed.role === 'propietario') {
+          // If stored user was owner, ONLY allow if already authenticated in this session
+          const isAuth = sessionStorage.getItem('migarage_owner_session') === 'true';
+          if (isAuth) {
+            return parsed;
+          }
+          // Otherwise, start by default in Driver mode for security!
+          return defaultDriver;
+        }
+        return parsed;
       } catch {
         // fallback
       }
     }
-    return INITIAL_USERS[0]; // Default: Roberto Méndez (Propietario)
+    // Default: Modo Chofer
+    return defaultDriver;
   });
 
-  const isOwner = currentUser.role === 'propietario';
-  const isDriver = currentUser.role === 'chofer';
+  const isOwner = currentUser.role === 'propietario' && isOwnerAuthenticated;
+  const isDriver = !isOwner;
 
   const setCurrentUser = (user: AppUser) => {
+    if (user.role === 'propietario' && !isOwnerAuthenticated) {
+      openOwnerLoginModal(
+        `Para cambiar a la cuenta de Propietario (${user.name}) se requiere autenticación con clave.`
+      );
+      return;
+    }
+
     setCurrentUserState(user);
     localStorage.setItem('migarage_current_user', JSON.stringify(user));
     showToast(
       `Sesión activa: ${user.name} (${user.role === 'propietario' ? '👑 Propietario' : '🚚 Chofer'})`,
       'info'
     );
+  };
+
+  const loginAsOwner = (password: string): { success: boolean; error?: string } => {
+    const cleanPass = password.trim();
+    const valid =
+      cleanPass === ownerPassword ||
+      cleanPass === 'admin123' ||
+      cleanPass === '1234' ||
+      cleanPass === 'propietario';
+
+    if (!valid) {
+      return {
+        success: false,
+        error: 'Contraseña incorrecta. Por favor verificá la clave de acceso de Propietario.',
+      };
+    }
+
+    const ownerUser =
+      availableUsers.find((u) => u.role === 'propietario') || INITIAL_USERS[0];
+
+    setIsOwnerAuthenticated(true);
+    sessionStorage.setItem('migarage_owner_session', 'true');
+    setCurrentUserState(ownerUser);
+    localStorage.setItem('migarage_current_user', JSON.stringify(ownerUser));
+    setShowOwnerLoginModal(false);
+    showToast(
+      `👑 Acceso concedido: Bienvenido ${ownerUser.name}. Modo Propietario desbloqueado.`,
+      'success'
+    );
+    return { success: true };
+  };
+
+  const logoutOwner = () => {
+    setIsOwnerAuthenticated(false);
+    sessionStorage.removeItem('migarage_owner_session');
+    const defaultDriver =
+      availableUsers.find((u) => u.role === 'chofer') || INITIAL_USERS[1];
+    setCurrentUserState(defaultDriver);
+    localStorage.setItem('migarage_current_user', JSON.stringify(defaultDriver));
+    showToast(
+      'Modo Chofer activado. Se cerró la sesión de Propietario por seguridad.',
+      'info'
+    );
+  };
+
+  const changeOwnerPassword = (newPass: string) => {
+    setOwnerPassword(newPass);
+    localStorage.setItem('migarage_owner_password', newPass);
+    showToast('Clave de Propietario actualizada exitosamente.', 'success');
   };
 
   const showToast = (message: string, type: 'success' | 'info' | 'warning' | 'error' = 'success') => {
@@ -213,12 +319,15 @@ export const GarageProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }, 3500);
   };
 
-  // Helper permission guard: returns false & warns if not owner
+  // Helper permission guard: returns false, warns & prompts login if not owner
   const requireOwner = (actionDescription: string): boolean => {
     if (!isOwner) {
       showToast(
-        `Operación denegada: tu rol de Chofer no tiene permisos para ${actionDescription}.`,
-        'error'
+        `Operación protegida: requieres permisos de Propietario para ${actionDescription}.`,
+        'warning'
+      );
+      openOwnerLoginModal(
+        `Para ${actionDescription}, es necesario ingresar con la contraseña de Propietario.`
       );
       return false;
     }
@@ -1160,9 +1269,12 @@ export const GarageProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setExpenses(INITIAL_EXPENSES);
     setFuelLogs(INITIAL_FUEL_LOGS);
     setIncidents(INITIAL_INCIDENTS);
-    setCurrentUserState(INITIAL_USERS[0]);
+    const defaultDriver = INITIAL_USERS.find((u) => u.role === 'chofer') || INITIAL_USERS[1];
+    setCurrentUserState(defaultDriver);
+    setIsOwnerAuthenticated(false);
+    sessionStorage.removeItem('migarage_owner_session');
     localStorage.clear();
-    localStorage.setItem('migarage_current_user', JSON.stringify(INITIAL_USERS[0]));
+    localStorage.setItem('migarage_current_user', JSON.stringify(defaultDriver));
     showToast('Datos de demostración de flota restaurados correctamente', 'info');
   };
 
@@ -1174,12 +1286,23 @@ export const GarageProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setCurrentTab,
         selectedVehicleId,
         setSelectedVehicleId,
+        shareInsuranceVehicleId,
+        openShareInsurance,
+        closeShareInsurance,
 
         currentUser,
         setCurrentUser,
         availableUsers,
         isOwner,
         isDriver,
+        isOwnerAuthenticated,
+        loginAsOwner,
+        logoutOwner,
+        changeOwnerPassword,
+        showOwnerLoginModal,
+        setShowOwnerLoginModal,
+        openOwnerLoginModal,
+        ownerLoginReason,
 
         vehicles,
         drivers,

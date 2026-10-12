@@ -22,7 +22,7 @@ interface IncidentsViewProps {
 }
 
 export const IncidentsView: React.FC<IncidentsViewProps> = () => {
-  const { incidents, deleteIncident, isOwner } = useGarage();
+  const { incidents, deleteIncident, openShareInsurance, isOwner } = useGarage();
   const [searchTerm, setSearchTerm] = useState('');
 
   const [showAddModal, setShowAddModal] = useState(false);
@@ -163,24 +163,35 @@ export const IncidentsView: React.FC<IncidentsViewProps> = () => {
               )}
             </div>
 
-            {isOwner && (
-              <div className="flex items-center gap-1 self-end md:self-center pt-2 md:pt-0 border-t md:border-t-0 border-slate-100 shrink-0">
-                <button
-                  onClick={() => setIncidentToEdit(inc)}
-                  className="p-2 text-slate-400 hover:text-slate-700 rounded-xl cursor-pointer"
-                  title="Editar siniestro"
-                >
-                  <Edit className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setIncidentToDelete(inc)}
-                  className="p-2 text-slate-400 hover:text-rose-600 rounded-xl cursor-pointer"
-                  title="Eliminar siniestro"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            )}
+            <div className="flex items-center gap-1.5 self-end md:self-center pt-2 md:pt-0 border-t md:border-t-0 border-slate-100 shrink-0">
+              <button
+                onClick={() => openShareInsurance(inc.vehicleId)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold transition cursor-pointer shadow-xs"
+                title="Compartir datos del seguro del vehículo de este siniestro"
+              >
+                <Shield className="w-3.5 h-3.5 text-blue-600" />
+                <span>Compartir Seguro</span>
+              </button>
+
+              {isOwner && (
+                <>
+                  <button
+                    onClick={() => setIncidentToEdit(inc)}
+                    className="p-2 text-slate-400 hover:text-slate-700 rounded-xl cursor-pointer"
+                    title="Editar siniestro"
+                  >
+                    <Edit className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setIncidentToDelete(inc)}
+                    className="p-2 text-slate-400 hover:text-rose-600 rounded-xl cursor-pointer"
+                    title="Eliminar siniestro"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         ))}
 

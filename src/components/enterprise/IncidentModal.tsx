@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useGarage } from '../../context/GarageContext';
 import { Incident, IncidentType, IncidentStatus } from '../../types';
-import { AlertTriangle, X } from 'lucide-react';
+import { AlertTriangle, X, Shield } from 'lucide-react';
 
 interface IncidentModalProps {
   onClose: () => void;
@@ -14,7 +14,16 @@ export const IncidentModal: React.FC<IncidentModalProps> = ({
   incidentToEdit,
   defaultVehicleId,
 }) => {
-  const { vehicles, drivers, addIncident, updateIncident, isOwner, currentUser, showToast } = useGarage();
+  const {
+    vehicles,
+    drivers,
+    addIncident,
+    updateIncident,
+    openShareInsurance,
+    isOwner,
+    currentUser,
+    showToast,
+  } = useGarage();
 
   const isEditing = !!incidentToEdit;
 
@@ -126,8 +135,8 @@ export const IncidentModal: React.FC<IncidentModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 animate-in fade-in duration-150">
-      <div className="relative bg-white rounded-3xl w-full max-w-xl p-6 sm:p-7 shadow-2xl border border-slate-200 my-8">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-2.5 sm:p-5 animate-in fade-in duration-150">
+      <div className="relative bg-white rounded-3xl w-full max-w-xl p-4 sm:p-6 md:p-7 shadow-2xl border border-slate-200 my-auto max-h-[92vh] overflow-y-auto">
         <button
           onClick={onClose}
           disabled={isSubmitting}
@@ -312,7 +321,20 @@ export const IncidentModal: React.FC<IncidentModalProps> = ({
 
           {/* Tercero involucrado */}
           <div className="p-3.5 rounded-2xl bg-[#F3F6FA] border border-[#DCE3ED] space-y-2.5">
-            <div className="font-bold text-slate-800 text-xs">Datos del Tercero Involucrado (si hubo)</div>
+            <div className="flex items-center justify-between pb-1">
+              <div className="font-bold text-slate-800 text-xs">Datos del Tercero Involucrado (si hubo)</div>
+              {vehicleId && (
+                <button
+                  type="button"
+                  onClick={() => openShareInsurance(vehicleId)}
+                  className="text-[11px] font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 cursor-pointer transition"
+                  title="Compartir datos de mi póliza y auxilio con el otro conductor"
+                >
+                  <Shield className="w-3.5 h-3.5 text-blue-600" />
+                  <span>Compartir mi Seguro</span>
+                </button>
+              )}
+            </div>
             <div className="grid grid-cols-2 gap-2.5">
               <input
                 type="text"

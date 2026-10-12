@@ -64,6 +64,7 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
     deleteIncident,
     assignDriverToVehicle,
     checkVehicleRelations,
+    openShareInsurance,
     isOwner,
   } = useGarage();
 
@@ -211,6 +212,14 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
                   </button>
                 </>
               )}
+              <button
+                onClick={() => openShareInsurance(vehicle.id)}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-blue-500/30 hover:bg-blue-500/50 text-blue-200 hover:text-white text-xs font-semibold cursor-pointer transition border border-blue-400/40 shadow-xs"
+                title="Compartir datos de seguro y auxilio mecánico en siniestro"
+              >
+                <Shield className="w-3.5 h-3.5 text-blue-300" />
+                <span className="hidden sm:inline">Compartir Seguro</span>
+              </button>
               <button
                 onClick={onClose}
                 className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer"
@@ -872,9 +881,19 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
             {/* TAB: SEGURO */}
             {activeTab === 'seguro' && (
               <div className="space-y-3">
-                <h3 className="font-bold text-[#172554] text-sm">Póliza Corporativa de Seguro</h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="font-bold text-[#172554] text-sm">Póliza Corporativa de Seguro</h3>
+                  <button
+                    onClick={() => openShareInsurance(vehicle.id)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-bold transition cursor-pointer shadow-xs"
+                  >
+                    <Shield className="w-3.5 h-3.5" />
+                    <span>Compartir en Siniestro</span>
+                  </button>
+                </div>
+
                 {vehInsurance ? (
-                  <div className="bg-white p-5 rounded-2xl border border-[#DCE3ED] shadow-xs space-y-3 text-xs">
+                  <div className="bg-white p-5 rounded-2xl border border-[#DCE3ED] shadow-xs space-y-4 text-xs">
                     <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                       <div>
                         <div className="font-extrabold text-[#172554] text-base">
@@ -915,10 +934,33 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
                         </div>
                       </div>
                     </div>
+
+                    <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2.5">
+                      <button
+                        onClick={() => openShareInsurance(vehicle.id)}
+                        className="px-4 py-2 rounded-xl bg-[#172554] hover:bg-blue-950 text-white font-bold text-xs transition flex items-center gap-2 cursor-pointer shadow-xs"
+                      >
+                        <Shield className="w-3.5 h-3.5 text-blue-300" />
+                        <span>Abrir Ficha de Seguro para Siniestro</span>
+                      </button>
+                      <a
+                        href={`tel:${vehInsurance.assistancePhone}`}
+                        className="px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-xs transition flex items-center gap-1.5 border border-emerald-200"
+                      >
+                        <Phone className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Llamar Auxilio ({vehInsurance.assistancePhone})</span>
+                      </a>
+                    </div>
                   </div>
                 ) : (
-                  <div className="text-center py-8 text-xs text-slate-500 bg-white rounded-2xl border border-[#DCE3ED]">
-                    No hay póliza de seguro asignada a esta unidad.
+                  <div className="text-center py-8 text-xs text-slate-500 bg-white rounded-2xl border border-[#DCE3ED] space-y-2">
+                    <p>No hay póliza de seguro asignada a esta unidad.</p>
+                    <button
+                      onClick={() => openShareInsurance(vehicle.id)}
+                      className="px-3 py-1.5 rounded-xl bg-blue-50 text-blue-700 font-bold hover:bg-blue-100 transition cursor-pointer"
+                    >
+                      Generar Constancia Digital de Flota
+                    </button>
                   </div>
                 )}
               </div>
@@ -926,7 +968,27 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
 
             {/* TAB: SINIESTROS */}
             {activeTab === 'siniestros' && (
-              <div className="space-y-3">
+              <div className="space-y-3.5">
+                {/* Fast Insurance Share Banner in Incident Tab */}
+                <div className="p-3.5 rounded-2xl bg-linear-to-r from-blue-50 to-indigo-50 border border-blue-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0">
+                      <Shield className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span className="font-bold text-slate-900 block">¿Ocurrió un siniestro con esta unidad?</span>
+                      <span className="text-slate-600 text-[11px]">Compartí la constancia del seguro y auxilio mecánico con el tercero o peritaje.</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => openShareInsurance(vehicle.id)}
+                    className="px-3.5 py-1.5 rounded-xl bg-[#172554] hover:bg-blue-950 text-white font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs shrink-0"
+                  >
+                    <Shield className="w-3.5 h-3.5 text-blue-300" />
+                    <span>Compartir Seguro 🛡️</span>
+                  </button>
+                </div>
+
                 <div className="flex items-center justify-between">
                   <h3 className="font-bold text-[#172554] text-sm">Historial de Siniestros</h3>
                   {onOpenQuickAction && (

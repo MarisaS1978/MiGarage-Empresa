@@ -11,7 +11,8 @@ import {
   Volume2,
   Users,
   Truck,
-  FileSpreadsheet,
+  KeyRound,
+  LogOut,
 } from 'lucide-react';
 import { UserSwitcherModal } from '../common/UserSwitcherModal';
 import { ConfirmDeleteModal } from '../common/ConfirmDeleteModal';
@@ -31,10 +32,30 @@ export const SettingsView: React.FC = () => {
     requestNotificationPermission,
     sendTestNotification,
     showToast,
+    openOwnerLoginModal,
+    logoutOwner,
+    changeOwnerPassword,
   } = useGarage();
 
   const [showUserModal, setShowUserModal] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [isChangingPass, setIsChangingPass] = useState(false);
+
+  const handleUpdatePassword = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newPassword.trim()) {
+      showToast('Por favor ingresá una contraseña válida', 'warning');
+      return;
+    }
+    if (newPassword.trim().length < 4) {
+      showToast('La contraseña debe tener al menos 4 caracteres', 'warning');
+      return;
+    }
+    changeOwnerPassword(newPassword.trim());
+    setNewPassword('');
+    setIsChangingPass(false);
+  };
 
   const handleExportJSON = () => {
     const backup = {
@@ -93,12 +114,36 @@ export const SettingsView: React.FC = () => {
             <p className="text-xs text-slate-500 mt-0.5">{currentUser.title || currentUser.email}</p>
           </div>
 
-          <button
-            onClick={() => setShowUserModal(true)}
-            className="px-4 py-2 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-semibold shadow-xs cursor-pointer"
-          >
-            Cambiar Usuario / Rol
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            {!isOwner ? (
+              <button
+                onClick={() =>
+                  openOwnerLoginModal(
+                    'Ingresá tu clave de Propietario para desbloquear la gestión completa.'
+                  )
+                }
+                className="px-3.5 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-900 border border-amber-300 text-xs font-bold shadow-xs cursor-pointer flex items-center gap-1.5 transition"
+              >
+                <Lock className="w-3.5 h-3.5 text-amber-700" />
+                <span>Ingresar como Propietario</span>
+              </button>
+            ) : (
+              <button
+                onClick={logoutOwner}
+                className="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 text-xs font-bold shadow-xs cursor-pointer flex items-center gap-1.5 transition"
+              >
+                <LogOut className="w-3.5 h-3.5 text-rose-600" />
+                <span>Salir a Modo Chofer</span>
+              </button>
+            )}
+
+            <button
+              onClick={() => setShowUserModal(true)}
+              className="px-4 py-2 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-semibold shadow-xs cursor-pointer"
+            >
+              Cambiar Usuario / Rol
+            </button>
+          </div>
         </div>
 
         {/* Roles and Security Explanation */}
@@ -155,6 +200,102 @@ export const SettingsView: React.FC = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Security & Owner Password Configuration */}
+      <div className="bg-white rounded-3xl p-6 border border-[#DCE3ED] shadow-xs space-y-4">
+        <div>
+          <div className="flex items-center gap-2">
+            <KeyRound className="w-4 h-4 text-[#2563EB]" />
+            <h2 className="text-base font-bold text-[#172554]">
+              Seguridad y Clave de Acceso de Propietario
+            </h2>
+          </div>
+          <p className="text-xs text-[#64748B] mt-0.5">
+            Configuración de credenciales de administración y política de acceso por defecto.
+          </p>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200/80 text-xs text-blue-900 space-y-1">
+          <div className="font-bold flex items-center gap-1.5">
+            <Shield className="w-3.5 h-3.5 text-[#2563EB]" />
+            <span>Política de Inicio en Modo Chofer (Activa)</span>
+          </div>
+          <p className="text-blue-800 leading-relaxed text-[11px]">
+            Para evitar modificaciones no deseadas en vehículos, gastos y contratos, la aplicación se inicia por defecto en <strong>Modo Chofer</strong>. Para acceder a la administración general, el usuario debe ingresar la clave de Propietario.
+          </p>
+        </div>
+
+        {isOwner ? (
+          <div className="pt-2 border-t border-slate-100">
+            {!isChangingPass ? (
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-[#F3F6FA] border border-[#DCE3ED]">
+                <div>
+                  <div className="font-bold text-xs text-slate-800">
+                    Contraseña de Administración
+                  </div>
+                  <div className="text-[11px] text-[#64748B]">
+                    Protegida. Clave demo predeterminada: <code className="bg-slate-200 px-1 py-0.5 rounded text-slate-900">admin123</code>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setIsChangingPass(true)}
+                  className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-800 text-xs font-bold transition cursor-pointer self-start sm:self-auto"
+                >
+                  Cambiar Contraseña
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleUpdatePassword} className="p-4 rounded-2xl bg-[#F3F6FA] border border-[#DCE3ED] space-y-3">
+                <div className="font-bold text-xs text-slate-800">
+                  Definir Nueva Clave de Propietario
+                </div>
+                <div className="flex flex-col sm:flex-row gap-2.5">
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Ingresá la nueva clave (mín. 4 caracteres)"
+                    className="flex-1 px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
+                    autoFocus
+                  />
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="submit"
+                      className="px-3.5 py-2 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-bold transition cursor-pointer"
+                    >
+                      Guardar Clave
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsChangingPass(false);
+                        setNewPassword('');
+                      }}
+                      className="px-3.5 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold transition cursor-pointer"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </div>
+              </form>
+            )}
+          </div>
+        ) : (
+          <div className="p-3.5 rounded-2xl bg-[#F3F6FA] border border-[#DCE3ED] flex items-center justify-between gap-3 text-xs">
+            <span className="text-slate-600">
+              Estás en <strong>Modo Chofer</strong>. Para modificar la clave de administración, primero debés ingresar como Propietario.
+            </span>
+            <button
+              onClick={() => openOwnerLoginModal('Ingresá como Propietario para gestionar la seguridad.')}
+              className="px-3 py-1.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-bold cursor-pointer shrink-0 transition"
+            >
+              Iniciar Sesión
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Notification Preferences */}

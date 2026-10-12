@@ -11,12 +11,13 @@ import {
   Edit,
   Trash2,
   Search,
+  Share2,
 } from 'lucide-react';
 import { InsuranceModal } from './InsuranceModal';
 import { ConfirmDeleteModal } from '../common/ConfirmDeleteModal';
 
 export const InsuranceView: React.FC = () => {
-  const { insurance, deleteInsurancePolicy, isOwner } = useGarage();
+  const { insurance, deleteInsurancePolicy, openShareInsurance, isOwner } = useGarage();
   const [searchTerm, setSearchTerm] = useState('');
 
   const [showAddModal, setShowAddModal] = useState(false);
@@ -155,29 +156,36 @@ export const InsuranceView: React.FC = () => {
             </div>
 
             {/* Bottom Actions */}
-            <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
-              <span className="text-[11px] text-slate-400">
-                {pol.notes || 'Póliza sin observaciones'}
-              </span>
+            <div className="pt-2.5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+              <button
+                onClick={() => openShareInsurance(pol.vehicleId)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold transition cursor-pointer border border-blue-200"
+                title="Compartir datos de póliza para siniestro o auxilio"
+              >
+                <Share2 className="w-3.5 h-3.5 text-blue-600" />
+                <span>Compartir Ficha Siniestro</span>
+              </button>
 
-              {isOwner && (
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={() => setPolicyToEdit(pol)}
-                    className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg cursor-pointer"
-                    title="Editar póliza"
-                  >
-                    <Edit className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => setPolicyToDelete(pol)}
-                    className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg cursor-pointer"
-                    title="Eliminar póliza"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              )}
+              <div className="flex items-center gap-1">
+                {isOwner && (
+                  <>
+                    <button
+                      onClick={() => setPolicyToEdit(pol)}
+                      className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg cursor-pointer"
+                      title="Editar póliza"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => setPolicyToDelete(pol)}
+                      className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg cursor-pointer"
+                      title="Eliminar póliza"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         ))}

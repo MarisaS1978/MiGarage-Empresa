@@ -14,6 +14,8 @@ import {
   Settings,
   Building,
   Store,
+  Lock,
+  LogOut,
 } from 'lucide-react';
 
 export const Sidebar: React.FC = () => {
@@ -27,6 +29,8 @@ export const Sidebar: React.FC = () => {
     unreadAlertsCount,
     currentUser,
     isOwner,
+    openOwnerLoginModal,
+    logoutOwner,
   } = useGarage();
 
   const activeIncidentsCount = incidents.filter(
@@ -72,7 +76,7 @@ export const Sidebar: React.FC = () => {
   return (
     <aside className="hidden lg:flex flex-col w-64 shrink-0 bg-[#172554] border-r border-blue-900/60 text-blue-100 min-h-[calc(100vh-4rem)] p-4 select-none">
       {/* Role & Mode Banner */}
-      <div className="mb-4 px-3.5 py-3 rounded-2xl bg-blue-950/70 border border-blue-800/60 flex items-center justify-between text-xs font-semibold">
+      <div className="mb-2.5 px-3.5 py-3 rounded-2xl bg-blue-950/70 border border-blue-800/60 flex items-center justify-between text-xs font-semibold">
         <div className="flex items-center gap-2">
           <Truck className="w-4 h-4 text-[#2563EB]" />
           <span>Gestión de Flota</span>
@@ -84,9 +88,34 @@ export const Sidebar: React.FC = () => {
               : 'bg-blue-500/20 text-blue-200 border border-blue-400/40'
           }`}
         >
-          {currentUser.role}
+          {isOwner ? '👑 Propietario' : '🚚 Chofer'}
         </span>
       </div>
+
+      {/* Mode Switcher Action Button */}
+      {!isOwner ? (
+        <button
+          onClick={() =>
+            openOwnerLoginModal(
+              'Ingresá la contraseña para acceder a las funciones avanzadas de Propietario.'
+            )
+          }
+          className="w-full mb-3 px-3 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-400/30 text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+          title="Desbloquear Modo Propietario con clave"
+        >
+          <Lock className="w-3.5 h-3.5 text-amber-300" />
+          <span>Ingresar como Propietario</span>
+        </button>
+      ) : (
+        <button
+          onClick={logoutOwner}
+          className="w-full mb-3 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-rose-500/20 text-rose-200 border border-white/10 text-xs font-medium transition flex items-center justify-center gap-1.5 cursor-pointer"
+          title="Volver a Modo Chofer"
+        >
+          <LogOut className="w-3.5 h-3.5 text-rose-300" />
+          <span>Salir a Modo Chofer</span>
+        </button>
+      )}
 
       {/* Navigation List */}
       <nav className="space-y-1 flex-1">

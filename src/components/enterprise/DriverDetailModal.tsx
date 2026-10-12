@@ -16,6 +16,7 @@ import {
   Clock,
   ChevronRight,
   ShieldAlert,
+  Shield,
 } from 'lucide-react';
 import { ConfirmDeleteModal } from '../common/ConfirmDeleteModal';
 import { DriverFormModal } from './DriverFormModal';
@@ -38,6 +39,7 @@ export const DriverDetailModal: React.FC<DriverDetailModalProps> = ({
     deleteDriver,
     checkDriverRelations,
     assignDriverToVehicle,
+    openShareInsurance,
     isOwner,
   } = useGarage();
 
@@ -86,8 +88,8 @@ export const DriverDetailModal: React.FC<DriverDetailModalProps> = ({
 
   return (
     <>
-      <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 animate-in fade-in duration-150">
-        <div className="relative bg-white rounded-3xl w-full max-w-2xl p-6 sm:p-7 shadow-2xl border border-slate-200 overflow-hidden my-6">
+      <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-2.5 sm:p-5 animate-in fade-in duration-150">
+        <div className="relative bg-white rounded-3xl w-full max-w-2xl p-4 sm:p-6 md:p-7 shadow-2xl border border-slate-200 overflow-hidden my-auto max-h-[92vh] overflow-y-auto">
           <button
             onClick={onClose}
             className="absolute top-5 right-5 text-slate-400 hover:text-slate-600 cursor-pointer"
@@ -255,18 +257,29 @@ export const DriverDetailModal: React.FC<DriverDetailModalProps> = ({
                     </div>
                   </div>
 
-                  {onSelectVehicle && (
+                  <div className="flex items-center gap-1.5 shrink-0">
                     <button
-                      onClick={() => {
-                        onClose();
-                        onSelectVehicle(assignedVehicle.id);
-                      }}
-                      className="px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-semibold flex items-center gap-1 hover:bg-slate-800 cursor-pointer"
+                      onClick={() => openShareInsurance(assignedVehicle.id)}
+                      className="px-2.5 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold flex items-center gap-1 cursor-pointer transition"
+                      title="Compartir datos de seguro y auxilio mecánico"
                     >
-                      <span>Ver Ficha</span>
-                      <ChevronRight className="w-3.5 h-3.5" />
+                      <Shield className="w-3.5 h-3.5 text-blue-600" />
+                      <span className="hidden sm:inline">Seguro</span>
                     </button>
-                  )}
+
+                    {onSelectVehicle && (
+                      <button
+                        onClick={() => {
+                          onClose();
+                          onSelectVehicle(assignedVehicle.id);
+                        }}
+                        className="px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-semibold flex items-center gap-1 hover:bg-slate-800 cursor-pointer"
+                      >
+                        <span>Ver Ficha</span>
+                        <ChevronRight className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               ) : (
                 <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs">

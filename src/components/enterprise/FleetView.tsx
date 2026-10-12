@@ -41,6 +41,7 @@ export const FleetView: React.FC<FleetViewProps> = ({
     deleteVehicle,
     assignDriverToVehicle,
     checkVehicleRelations,
+    openShareInsurance,
     isOwner,
   } = useGarage();
 
@@ -290,6 +291,15 @@ export const FleetView: React.FC<FleetViewProps> = ({
                   <ChevronRight className="w-3.5 h-3.5" />
                 </button>
 
+                {/* Quick Share Insurance in Accident Button */}
+                <button
+                  onClick={() => openShareInsurance(veh.id)}
+                  className="p-2 rounded-xl border border-blue-200 bg-blue-50/80 hover:bg-blue-100 text-blue-700 transition cursor-pointer"
+                  title="Compartir datos del seguro en caso de siniestro o auxilio"
+                >
+                  <Shield className="w-4 h-4 text-blue-600" />
+                </button>
+
                 {/* 3-Dots Actions Menu */}
                 <div className="relative">
                   <button
@@ -308,7 +318,7 @@ export const FleetView: React.FC<FleetViewProps> = ({
                         className="fixed inset-0 z-30"
                         onClick={() => setActiveMenuVehicleId(null)}
                       />
-                      <div className="absolute right-0 mt-2 w-52 rounded-2xl bg-white border border-slate-200 shadow-xl p-1.5 z-40 text-xs">
+                      <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white border border-slate-200 shadow-xl p-1.5 z-40 text-xs">
                         <button
                           onClick={() => {
                             setActiveMenuVehicleId(null);
@@ -318,6 +328,17 @@ export const FleetView: React.FC<FleetViewProps> = ({
                         >
                           <ChevronRight className="w-4 h-4 text-blue-600" />
                           <span>Ver Ficha Completa</span>
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setActiveMenuVehicleId(null);
+                            openShareInsurance(veh.id);
+                          }}
+                          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left hover:bg-blue-50 text-blue-900 font-semibold cursor-pointer"
+                        >
+                          <Shield className="w-4 h-4 text-blue-600" />
+                          <span>Compartir Seguro (Siniestro)</span>
                         </button>
 
                         <button
