@@ -159,9 +159,14 @@ export const Sidebar: React.FC = () => {
       </nav>
 
       {/* Footer Info */}
-      <div className="pt-4 border-t border-blue-900/40 text-[11px] text-blue-300/80 flex items-center justify-between">
-        <span>Flota activa: {vehicles.length} unidades</span>
-        <span className="font-mono text-[10px]">v2.1</span>
+      <div className="pt-3.5 border-t border-blue-900/40 text-[11px] text-blue-300/80 space-y-1">
+        <div className="flex items-center justify-between">
+          <span>Flota activa: {vehicles.length} unidades</span>
+          <span className="font-mono text-[10px]">v2.1</span>
+        </div>
+        <p className="text-[10px] text-blue-300/60 leading-tight">
+          Idea: <strong className="text-blue-200">Marisa Sandroni</strong>
+        </p>
       </div>
     </aside>
   );

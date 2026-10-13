@@ -110,8 +110,22 @@ const MainAppContent: React.FC = () => {
         <Sidebar />
 
         {/* Dynamic Content Area */}
-        <main className="flex-1 px-3 py-4 sm:p-6 lg:p-8 pb-24 lg:pb-12 overflow-x-hidden min-w-0 w-full max-w-full">
-          {renderActiveView()}
+        <main className="flex-1 px-3 py-4 sm:p-6 lg:p-8 pb-24 lg:pb-12 overflow-x-hidden min-w-0 w-full max-w-full flex flex-col justify-between">
+          <div className="flex-1">
+            {renderActiveView()}
+          </div>
+
+          {/* Footer */}
+          <footer className="mt-12 pt-6 pb-2 border-t border-[#DCE3ED] text-center shrink-0">
+            <div className="max-w-md mx-auto space-y-1">
+              <p className="text-xs font-semibold text-slate-700">
+                Desarrollado bajo idea de <span className="font-extrabold text-[#172554]">Marisa Sandroni</span>
+              </p>
+              <p className="text-[11px] text-[#64748B]">
+                MiGarage &copy; {new Date().getFullYear()} &middot; Gestión Integral de Flotas y Choferes
+              </p>
+            </div>
+          </footer>
         </main>
       </div>
 
