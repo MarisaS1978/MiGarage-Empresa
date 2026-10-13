@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useGarage } from '../../context/GarageContext';
 import { VehicleType, FuelType, Vehicle, VehicleStatus } from '../../types';
-import { Truck, X, AlertCircle } from 'lucide-react';
+import { Truck, X, AlertCircle, Upload, Camera, Image as ImageIcon, Trash2, Lock, Sparkles } from 'lucide-react';
 
 interface VehicleFormModalProps {
   onClose: () => void;
@@ -9,9 +9,18 @@ interface VehicleFormModalProps {
 }
 
 export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({ onClose, vehicleToEdit }) => {
-  const { addVehicle, updateVehicle, drivers, vehicles, isOwner, showToast } = useGarage();
+  const {
+    addVehicle,
+    updateVehicle,
+    drivers,
+    vehicles,
+    isOwner,
+    openOwnerLoginModal,
+    showToast,
+  } = useGarage();
 
   const isEditing = !!vehicleToEdit;
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [brand, setBrand] = useState(vehicleToEdit?.brand || '');
   const [model, setModel] = useState(vehicleToEdit?.model || '');
@@ -27,7 +36,32 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({ onClose, veh
   const [assignedDriverId, setAssignedDriverId] = useState(vehicleToEdit?.assignedDriverId || '');
   const [notes, setNotes] = useState(vehicleToEdit?.notes || '');
   const [photoUrl, setPhotoUrl] = useState(vehicleToEdit?.photoUrl || '');
+  const [showUrlInput, setShowUrlInput] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      showToast('Por favor seleccioná un archivo de imagen (JPG, PNG, WEBP).', 'error');
+      return;
+    }
+
+    if (file.size > 8 * 1024 * 1024) {
+      showToast('La imagen supera el límite de 8MB.', 'warning');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        setPhotoUrl(reader.result);
+        showToast('Foto cargada exitosamente.', 'success');
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   useEffect(() => {
     if (vehicleToEdit) {
@@ -154,7 +188,117 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({ onClose, veh
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4 text-xs mt-5">
+        {/* Banner if not owner */}
+        {!isOwner && (
+          <div className="my-3 p-3.5 rounded-2xl bg-amber-50 border border-amber-300 text-amber-900 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 min-w-0">
+              <Lock className="w-4 h-4 text-amber-600 shrink-0" />
+              <span className="text-xs font-semibold truncate">
+                Para guardar cambios o subir fotos, necesitás ingresar en Modo Propietario.
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+                openOwnerLoginModal('Ingresá tu clave de Propietario para editar la flota.');
+              }}
+              className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold shrink-0 cursor-pointer shadow-xs"
+            >
+              Desbloquear
+            </button>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4 text-xs mt-4">
+          {/* Foto de la Unidad con subida de imagen */}
+          <div className="p-3.5 rounded-2xl bg-[#F8FAFC] border border-[#DCE3ED] space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="font-bold text-[#1E293B] flex items-center gap-1.5">
+                <Camera className="w-4 h-4 text-[#2563EB]" />
+                <span>Foto del Vehículo</span>
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowUrlInput(!showUrlInput)}
+                className="text-[11px] font-semibold text-blue-600 hover:text-blue-800 cursor-pointer"
+              >
+                {showUrlInput ? 'Ocultar enlace web' : 'Ingresar enlace web'}
+              </button>
+            </div>
+
+            <div className="flex items-center gap-4">
+              {/* Photo Preview Thumbnail */}
+              <div className="w-20 h-20 rounded-2xl overflow-hidden bg-slate-100 border border-slate-300 shrink-0 shadow-xs relative">
+                {photoUrl ? (
+                  <img
+                    src={photoUrl}
+                    alt="Foto del vehículo"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 bg-slate-100 p-1 text-center">
+                    <Truck className="w-6 h-6 mb-1 text-slate-400" />
+                    <span className="text-[9px] text-slate-500 leading-tight">Sin foto</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Upload & Action Buttons */}
+              <div className="flex-1 space-y-2">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageFileChange}
+                  className="hidden"
+                />
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="px-3.5 py-2 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-semibold flex items-center gap-1.5 shadow-xs transition cursor-pointer text-xs"
+                  >
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>{photoUrl ? 'Cambiar Foto' : 'Subir Imagen'}</span>
+                  </button>
+
+                  {photoUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setPhotoUrl('')}
+                      className="px-2.5 py-2 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold flex items-center gap-1 transition cursor-pointer text-xs"
+                      title="Eliminar foto"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Quitar</span>
+                    </button>
+                  )}
+                </div>
+
+                <p className="text-[11px] text-slate-500">
+                  Subí una foto de la unidad (JPG, PNG o WEBP de tu celular o computadora).
+                </p>
+              </div>
+            </div>
+
+            {/* URL input fallback if needed */}
+            {showUrlInput && (
+              <div className="pt-2 border-t border-slate-200">
+                <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                  Enlace directo a imagen (URL)
+                </label>
+                <input
+                  type="url"
+                  placeholder="https://images.unsplash.com/photo-..."
+                  value={photoUrl}
+                  onChange={(e) => setPhotoUrl(e.target.value)}
+                  className="w-full p-2 rounded-xl bg-white border border-[#DCE3ED] text-[#1E293B] text-xs focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] focus:outline-hidden"
+                />
+              </div>
+            )}
+          </div>
           {/* Marca y Modelo */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>

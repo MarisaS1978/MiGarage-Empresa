@@ -13,6 +13,8 @@ import {
   Shield,
   FileText,
   Search,
+  X,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { IncidentModal } from './IncidentModal';
 import { ConfirmDeleteModal } from '../common/ConfirmDeleteModal';
@@ -28,6 +30,7 @@ export const IncidentsView: React.FC<IncidentsViewProps> = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [incidentToEdit, setIncidentToEdit] = useState<Incident | null>(null);
   const [incidentToDelete, setIncidentToDelete] = useState<Incident | null>(null);
+  const [selectedPhotoPreview, setSelectedPhotoPreview] = useState<string | null>(null);
 
   const filtered = incidents.filter(
     (inc) =>
@@ -161,6 +164,32 @@ export const IncidentsView: React.FC<IncidentsViewProps> = () => {
                   )}
                 </div>
               )}
+              {/* Fotos del siniestro */}
+              {inc.photos && inc.photos.length > 0 ? (
+                <div className="mt-2 pt-2 border-t border-slate-100">
+                  <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-700 mb-1.5">
+                    <Camera className="w-3.5 h-3.5 text-[#2563EB]" />
+                    <span>Fotos registradas ({inc.photos.length}):</span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {inc.photos.map((p, idx) => (
+                      <div
+                        key={idx}
+                        onClick={() => setSelectedPhotoPreview(p)}
+                        className="w-14 h-14 rounded-xl overflow-hidden border border-slate-200 bg-slate-100 cursor-pointer hover:border-[#2563EB] hover:scale-105 transition shadow-2xs"
+                        title="Hacé clic para ampliar foto"
+                      >
+                        <img src={p} alt={`Foto siniestro ${idx + 1}`} className="w-full h-full object-cover" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : inc.photosCount > 0 ? (
+                <div className="mt-1 flex items-center gap-1.5 text-[11px] text-slate-500 font-medium">
+                  <Camera className="w-3.5 h-3.5 text-slate-400" />
+                  <span>{inc.photosCount} fotos periciales archivadas</span>
+                </div>
+              ) : null}
             </div>
 
             <div className="flex items-center gap-1.5 self-end md:self-center pt-2 md:pt-0 border-t md:border-t-0 border-slate-100 shrink-0">
@@ -201,6 +230,28 @@ export const IncidentsView: React.FC<IncidentsViewProps> = () => {
           </div>
         )}
       </div>
+
+      {/* Photo Preview Lightbox Modal */}
+      {selectedPhotoPreview && (
+        <div
+          className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 animate-in fade-in cursor-pointer"
+          onClick={() => setSelectedPhotoPreview(null)}
+        >
+          <div className="relative max-w-3xl w-full max-h-[90vh] flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setSelectedPhotoPreview(null)}
+              className="absolute -top-10 right-0 text-white hover:text-slate-300 p-2 cursor-pointer"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <img
+              src={selectedPhotoPreview}
+              alt="Foto ampliada del siniestro"
+              className="max-h-[82vh] w-auto max-w-full rounded-2xl object-contain shadow-2xl border border-white/20"
+            />
+          </div>
+        </div>
+      )}
 
       {/* Modals */}
       {showAddModal && (

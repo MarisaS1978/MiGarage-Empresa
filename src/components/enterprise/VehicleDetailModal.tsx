@@ -192,12 +192,12 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
           {/* Header Cover Bar - Compact & Responsive */}
           <div className="bg-[#172554] text-white p-4 sm:p-5 relative shrink-0">
             {/* Top Close & Main Action Buttons */}
-            <div className="absolute top-3.5 right-3.5 flex items-center gap-1.5 sm:gap-2 z-10">
+            <div className="absolute top-3.5 right-3.5 flex items-center gap-1 sm:gap-2 z-10">
               {isOwner && (
                 <>
                   <button
                     onClick={() => setShowEditModal(true)}
-                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold cursor-pointer transition"
+                    className="flex items-center gap-1 p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold cursor-pointer transition"
                     title="Editar datos del vehículo"
                   >
                     <Edit className="w-3.5 h-3.5" />
@@ -214,7 +214,7 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
               )}
               <button
                 onClick={() => openShareInsurance(vehicle.id)}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-blue-500/30 hover:bg-blue-500/50 text-blue-200 hover:text-white text-xs font-semibold cursor-pointer transition border border-blue-400/40 shadow-xs"
+                className="flex items-center gap-1 p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-blue-500/30 hover:bg-blue-500/50 text-blue-200 hover:text-white text-xs font-semibold cursor-pointer transition border border-blue-400/40 shadow-xs"
                 title="Compartir datos de seguro y auxilio mecánico en siniestro"
               >
                 <Shield className="w-3.5 h-3.5 text-blue-300" />
@@ -222,15 +222,15 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
               </button>
               <button
                 onClick={onClose}
-                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer"
+                className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer"
                 title="Cerrar ficha"
               >
-                <X className="w-4 h-4 sm:w-5 sm:h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* Vehicle Main Info Row */}
-            <div className="flex items-start sm:items-center gap-3.5 sm:gap-5 pr-20 sm:pr-24">
+            <div className="flex items-start sm:items-center gap-3 sm:gap-5 pr-[130px] sm:pr-32">
               <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-slate-800 shrink-0 border-2 border-blue-400/30 shadow-md">
                 {vehicle.photoUrl ? (
                   <img

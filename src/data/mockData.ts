@@ -897,7 +897,11 @@ export const INITIAL_INCIDENTS: Incident[] = [
     internalResponsible: 'Marcelo Gómez (Jefe Flota)',
     repairWorkshop: 'Taller Chapa y Pintura San Martín',
     daysOutOfService: 3,
-    photosCount: 6,
+    photosCount: 2,
+    photos: [
+      'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=600&q=80',
+      'https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?auto=format&fit=crop&w=600&q=80',
+    ],
     thirdParty: {
       name: 'Distribuidora del Oeste SRL (Chofer: Raúl Benítez)',
       phone: '+54 9 11 4488-3321',
@@ -926,6 +930,10 @@ export const INITIAL_INCIDENTS: Incident[] = [
     internalResponsible: 'Marcelo Gómez',
     repairWorkshop: 'Sacabollos Master Express',
     daysOutOfService: 4,
-    photosCount: 8,
+    photosCount: 2,
+    photos: [
+      'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80',
+      'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80',
+    ],
   },
 ];

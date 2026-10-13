@@ -113,102 +113,80 @@ export const NotificationCenterModal: React.FC<NotificationCenterModalProps> = (
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5">
       <div className="relative bg-white rounded-3xl w-full max-w-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh]">
-        {/* Top Header */}
-        <div className="bg-slate-900 text-white p-5 sm:p-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-teal-500/20 border border-teal-500/40 flex items-center justify-center text-teal-400">
-              <Bell className="w-5 h-5" />
+        {/* Top Header - Ultra Slim & Clean */}
+        <div className="bg-slate-900 text-white px-3.5 py-2.5 sm:px-5 sm:py-3 flex items-center justify-between gap-2.5 shrink-0">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-teal-500/20 border border-teal-500/40 flex items-center justify-center text-teal-400 shrink-0">
+              <Bell className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-lg sm:text-xl font-bold tracking-tight">
-                  Centro de Notificaciones & Vencimientos
-                </h2>
-                {unreadAlertsCount > 0 && (
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-rose-500 text-white font-extrabold font-mono">
-                    {unreadAlertsCount}
-                  </span>
-                )}
-              </div>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Alertas automáticas de pólizas de seguros, obleas de VTV y services de mantenimiento.
-              </p>
+            <div className="min-w-0 flex items-center gap-2">
+              <h2 className="text-sm sm:text-base font-bold tracking-tight text-white truncate">
+                Centro de Notificaciones & Vencimientos
+              </h2>
+              {unreadAlertsCount > 0 && (
+                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-rose-500 text-white font-extrabold font-mono shrink-0">
+                  {unreadAlertsCount}
+                </span>
+              )}
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="w-9 h-9 rounded-full bg-slate-800 text-slate-300 hover:text-white flex items-center justify-center cursor-pointer shrink-0 transition"
+            className="w-7 h-7 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center cursor-pointer shrink-0 transition"
+            aria-label="Cerrar modal"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Web Push Banner */}
-        <div className="bg-slate-100 p-4 border-b border-slate-200">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5">
-              <Smartphone className="w-5 h-5 text-teal-700 shrink-0" />
-              <div>
-                <div className="text-xs font-bold text-slate-900">
-                  {notificationSettings.permissionStatus === 'granted'
-                    ? '🟢 Notificaciones Web / Push Activadas'
-                    : notificationSettings.permissionStatus === 'denied'
-                    ? '⚠️ Notificaciones bloqueadas en el navegador'
-                    : '🔔 Activá las alertas automáticas en tu dispositivo'}
-                </div>
-                <div className="text-[11px] text-slate-500">
-                  {notificationSettings.permissionStatus === 'granted'
-                    ? 'Recibirás avisos en pantalla incluso con la pestaña en segundo plano.'
-                    : 'Permití el aviso del navegador para enterarte antes de que venza tu seguro o VTV.'}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+        {/* Mini Notification Status Strip */}
+        <div className="bg-slate-100 px-3 py-1.5 sm:px-5 sm:py-2 border-b border-slate-200 shrink-0">
+          <div className="flex items-center justify-between gap-2 text-xs">
+            <div className="flex items-center gap-1.5 min-w-0 text-[11px] text-slate-700 truncate">
+              <Smartphone className="w-3.5 h-3.5 text-teal-700 shrink-0" />
+              <span className="truncate font-medium">
+                {notificationSettings.permissionStatus === 'granted'
+                  ? 'Alertas Web Push activas'
+                  : 'Alertas en dispositivo'}
+              </span>
               {notificationSettings.permissionStatus !== 'granted' && (
                 <button
                   onClick={requestNotificationPermission}
-                  className="px-3 py-1.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-semibold shadow-xs transition cursor-pointer"
+                  className="ml-1 text-[10px] font-bold text-blue-700 hover:underline cursor-pointer"
                 >
-                  Activar Notificaciones
+                  Activar
                 </button>
               )}
+            </div>
 
-              <button
-                onClick={sendTestNotification}
-                className="px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-semibold transition cursor-pointer"
-                title="Probar sonido y notificación"
-              >
-                Probar
-              </button>
-
+            <div className="flex items-center gap-1 shrink-0">
               <button
                 onClick={() => checkUpcomingExpirationsNow(true)}
-                className="p-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 transition cursor-pointer"
+                className="p-1 rounded bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition cursor-pointer"
                 title="Escanear vencimientos ahora"
               >
-                <RefreshCw className="w-4 h-4" />
+                <RefreshCw className="w-3 h-3" />
               </button>
 
               <button
                 onClick={() => setShowConfig(!showConfig)}
-                className={`p-1.5 rounded-xl border transition cursor-pointer ${
+                className={`p-1 rounded border transition cursor-pointer ${
                   showConfig
                     ? 'bg-[#2563EB] text-white border-[#2563EB]'
-                    : 'bg-slate-200 hover:bg-slate-300 text-slate-800 border-slate-300'
+                    : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
                 }`}
                 title="Ajustar preferencias de alerta"
               >
-                <Sliders className="w-4 h-4" />
+                <Sliders className="w-3 h-3" />
               </button>
             </div>
           </div>
 
           {/* Quick Preferences Drawer */}
           {showConfig && (
-            <div className="mt-3 pt-3 border-t border-slate-200/80 grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs text-slate-700">
-              <label className="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-slate-200 cursor-pointer">
+            <div className="mt-1.5 pt-1.5 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-1.5 text-xs text-slate-700">
+              <label className="flex items-center gap-2 bg-white px-2 py-1 rounded border border-slate-200 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={notificationSettings.notifyInsurance}
@@ -217,84 +195,84 @@ export const NotificationCenterModal: React.FC<NotificationCenterModalProps> = (
                   }
                   className="rounded accent-[#2563EB]"
                 />
-                <span className="font-semibold">Seguros (30 días)</span>
+                <span className="font-semibold text-[10px]">Seguros (30 días)</span>
               </label>
 
-              <label className="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-slate-200 cursor-pointer">
+              <label className="flex items-center gap-2 bg-white px-2 py-1 rounded border border-slate-200 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={notificationSettings.notifyVtv}
                   onChange={(e) => updateNotificationSettings({ notifyVtv: e.target.checked })}
                   className="rounded accent-[#2563EB]"
                 />
-                <span className="font-semibold">VTV & Obleas</span>
+                <span className="font-semibold text-[10px]">VTV & Obleas</span>
               </label>
 
-              <label className="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-slate-200 cursor-pointer">
+              <label className="flex items-center gap-2 bg-white px-2 py-1 rounded border border-slate-200 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={notificationSettings.soundEnabled}
                   onChange={(e) => updateNotificationSettings({ soundEnabled: e.target.checked })}
                   className="rounded accent-[#2563EB]"
                 />
-                <span className="font-semibold">Sonido de alerta</span>
+                <span className="font-semibold text-[10px]">Sonido de alerta</span>
               </label>
             </div>
           )}
         </div>
 
         {/* Filter Pills & Actions */}
-        <div className="px-5 pt-3 pb-2 flex items-center justify-between gap-2 overflow-x-auto border-b border-slate-100">
+        <div className="px-3.5 sm:px-5 py-2.5 flex items-center justify-between gap-2 overflow-x-auto border-b border-slate-100 bg-white shrink-0 scrollbar-none">
           <div className="flex items-center gap-1.5 text-xs font-semibold">
             <button
               onClick={() => setActiveFilter('todas')}
-              className={`px-3 py-1.5 rounded-xl transition cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl transition cursor-pointer shrink-0 ${
                 activeFilter === 'todas'
-                  ? 'bg-slate-900 text-white'
+                  ? 'bg-slate-900 text-white font-bold'
                   : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
             >
               Todas ({alerts.length})
             </button>
             <button
-              onClick={() => setActiveFilter('seguro')}
-              className={`px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1 ${
-                activeFilter === 'seguro'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              onClick={() => setActiveFilter('mantenimiento')}
+              className={`px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1 shrink-0 ${
+                activeFilter === 'mantenimiento'
+                  ? 'bg-teal-600 text-white font-bold shadow-xs'
+                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
               }`}
             >
-              <Shield className="w-3.5 h-3.5" />
-              <span>Seguros</span>
+              <Wrench className="w-3.5 h-3.5 text-teal-500 group-hover:text-teal-700" />
+              <span>Services ({alerts.filter((a) => a.type === 'mantenimiento').length})</span>
+            </button>
+            <button
+              onClick={() => setActiveFilter('seguro')}
+              className={`px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1 shrink-0 ${
+                activeFilter === 'seguro'
+                  ? 'bg-blue-600 text-white font-bold shadow-xs'
+                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+              }`}
+            >
+              <Shield className="w-3.5 h-3.5 text-blue-500" />
+              <span>Seguros ({alerts.filter((a) => a.type === 'seguro').length})</span>
             </button>
             <button
               onClick={() => setActiveFilter('vtv')}
-              className={`px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1 ${
+              className={`px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1 shrink-0 ${
                 activeFilter === 'vtv'
-                  ? 'bg-amber-600 text-white'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  ? 'bg-amber-600 text-white font-bold shadow-xs'
+                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
               }`}
             >
-              <FileText className="w-3.5 h-3.5" />
-              <span>VTV</span>
-            </button>
-            <button
-              onClick={() => setActiveFilter('mantenimiento')}
-              className={`px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1 ${
-                activeFilter === 'mantenimiento'
-                  ? 'bg-teal-600 text-white'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-              }`}
-            >
-              <Wrench className="w-3.5 h-3.5" />
-              <span>Services</span>
+              <FileText className="w-3.5 h-3.5 text-amber-500" />
+              <span>VTV ({alerts.filter((a) => a.type === 'vtv').length})</span>
             </button>
           </div>
 
           {unreadAlertsCount > 0 && (
             <button
               onClick={markAllAlertsAsRead}
-              className="text-xs text-teal-700 hover:text-teal-800 font-bold whitespace-nowrap cursor-pointer"
+              className="text-xs text-teal-700 hover:text-teal-900 font-bold whitespace-nowrap cursor-pointer shrink-0 ml-2"
             >
               Marcar leídas
             </button>
@@ -369,10 +347,22 @@ export const NotificationCenterModal: React.FC<NotificationCenterModalProps> = (
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => handleGoToSection(alert)}
-                        className="px-3 py-1.5 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 font-bold transition cursor-pointer flex items-center gap-1"
+                        className={`px-3 py-1.5 rounded-xl font-bold transition cursor-pointer flex items-center gap-1.5 ${
+                          alert.type === 'mantenimiento'
+                            ? 'bg-teal-500 hover:bg-teal-600 text-white shadow-xs'
+                            : alert.type === 'seguro'
+                            ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-xs'
+                            : 'bg-amber-500 hover:bg-amber-600 text-white shadow-xs'
+                        }`}
                       >
                         <ExternalLink className="w-3.5 h-3.5" />
-                        <span>Ver en {alert.actionTab}</span>
+                        <span>
+                          {alert.type === 'mantenimiento'
+                            ? '🛠️ Gestionar Servicio'
+                            : alert.type === 'seguro'
+                            ? '🛡️ Ver Seguro'
+                            : '📄 Ver Documento / VTV'}
+                        </span>
                       </button>
 
                       <button

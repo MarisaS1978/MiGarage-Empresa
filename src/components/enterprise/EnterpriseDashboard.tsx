@@ -179,28 +179,28 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
   );
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto">
+    <div className="space-y-6 max-w-6xl mx-auto w-full min-w-0">
       {/* Enterprise Welcome Banner */}
-      <div className="bg-[#172554] rounded-3xl p-5 sm:p-7 border border-blue-900/40 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
+      <div className="bg-[#172554] rounded-3xl p-4 sm:p-7 border border-blue-900/40 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4 overflow-hidden w-full min-w-0">
+        <div className="min-w-0">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-[#DBEAFE] text-xs font-semibold mb-2">
-            <Building2 className="w-3.5 h-3.5" />
-            <span>Suite Corporativa de Gestión de Flota</span>
+            <Building2 className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">Suite Corporativa de Gestión de Flota</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+          <h1 className="text-xl sm:text-3xl font-extrabold tracking-tight truncate">
             Dashboard Operativo
           </h1>
-          <p className="text-blue-200 text-sm mt-1">
+          <p className="text-blue-200 text-xs sm:text-sm mt-1">
             {dashboardMode === 'general'
               ? 'Control integral de flota completa, costos consolidados y estado de unidades en tiempo real.'
               : `Panel de control y seguimiento para ${activeDriver ? activeDriver.name : 'el conductor seleccionado'}.`}
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2.5 shrink-0">
           <button
             onClick={() => setCurrentTab('informes')}
-            className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold transition cursor-pointer shadow-md shadow-blue-950/40"
+            className="flex items-center gap-1.5 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold transition cursor-pointer shadow-md shadow-blue-950/40"
           >
             <BarChart3 className="w-4 h-4" />
             <span>Informes & KPIs</span>
@@ -209,9 +209,9 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
       </div>
 
       {/* VIEW SELECTOR: Flota General vs. Vista por Chofer */}
-      <div className="bg-white rounded-2xl p-3 border border-[#DCE3ED] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2.5">
-          <span className="text-xs font-bold text-[#64748B] uppercase tracking-wider pl-1">
+      <div className="bg-white rounded-2xl p-3 border border-[#DCE3ED] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3 overflow-hidden w-full max-w-full min-w-0">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 min-w-0">
+          <span className="text-xs font-bold text-[#64748B] uppercase tracking-wider pl-1 shrink-0">
             Modo de Vista:
           </span>
           <div className="flex p-1 bg-[#F3F6FA] rounded-xl border border-[#DCE3ED]">
@@ -225,67 +225,68 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
                 }
                 setDashboardMode('general');
               }}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
                 dashboardMode === 'general'
                   ? 'bg-[#172554] text-white shadow-xs'
                   : 'text-[#64748B] hover:text-[#172554]'
               }`}
               title={!isOwner ? 'Requiere clave de Propietario' : 'Vista de Flota General'}
             >
-              <Truck className="w-3.5 h-3.5" />
+              <Truck className="w-3.5 h-3.5 shrink-0" />
               <span>Flota General</span>
-              {!isOwner && <Lock className="w-3 h-3 text-amber-500 ml-0.5" />}
+              {!isOwner && <Lock className="w-3 h-3 text-amber-500 ml-0.5 shrink-0" />}
             </button>
             <button
               onClick={() => setDashboardMode('driver')}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
                 dashboardMode === 'driver'
                   ? 'bg-[#2563EB] text-white shadow-xs'
                   : 'text-[#64748B] hover:text-[#2563EB]'
               }`}
             >
-              <Users className="w-3.5 h-3.5" />
+              <Users className="w-3.5 h-3.5 shrink-0" />
               <span>Vista por Chofer</span>
             </button>
           </div>
 
           {!isOwner && (
-            <span className="text-[11px] text-amber-800 bg-amber-50 border border-amber-200/80 px-2.5 py-1 rounded-lg font-medium inline-flex items-center gap-1.5">
-              <Lock className="w-3 h-3 text-amber-600" />
-              <span>Modo Chofer Activo (Por defecto)</span>
+            <span className="text-[11px] text-amber-800 bg-amber-50 border border-amber-200/80 px-2.5 py-1 rounded-lg font-medium inline-flex items-center gap-1.5 shrink-0 max-w-full truncate">
+              <Lock className="w-3 h-3 text-amber-600 shrink-0" />
+              <span className="truncate">Modo Chofer Activo (Por defecto)</span>
             </span>
           )}
         </div>
 
-        {/* Driver Dropdown Selector (Active when in Driver view, or to pick driver) */}
+        {/* Driver Dropdown Selector (Responsive & Constrained to Container) */}
         {dashboardMode === 'driver' && drivers.length > 0 && (
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-[#64748B] hidden md:inline">
+          <div className="flex items-center gap-2 w-full md:w-auto min-w-0 max-w-full">
+            <span className="text-xs font-semibold text-[#64748B] hidden lg:inline shrink-0">
               Conductor:
             </span>
-            <select
-              value={selectedDriverId}
-              onChange={(e) => setSelectedDriverId(e.target.value)}
-              className="px-3 py-1.5 bg-[#F3F6FA] border border-[#DCE3ED] rounded-xl text-xs font-bold text-[#172554] focus:outline-hidden focus:ring-2 focus:ring-[#2563EB] cursor-pointer"
-            >
-              {drivers.map((drv) => {
-                const veh = vehicles.find(
-                  (v) =>
-                    v.id === drv.assignedVehicleId ||
-                    v.assignedDriverId === drv.id
-                );
-                const dniEnd =
-                  drv.dni && drv.dni.length >= 3
-                    ? drv.dni.slice(-3)
-                    : drv.dni || '---';
-                return (
-                  <option key={drv.id} value={drv.id}>
-                    {drv.name} — DNI terminado en {dniEnd}{' '}
-                    {veh ? `(${veh.brand} ${veh.model} · ${veh.plate})` : '(Sin unidad)'}
-                  </option>
-                );
-              })}
-            </select>
+            <div className="relative w-full md:w-auto min-w-0 flex-1">
+              <select
+                value={selectedDriverId}
+                onChange={(e) => setSelectedDriverId(e.target.value)}
+                className="w-full md:max-w-xs px-3 py-2 bg-[#F3F6FA] border border-[#DCE3ED] rounded-xl text-xs font-bold text-[#172554] focus:outline-hidden focus:ring-2 focus:ring-[#2563EB] cursor-pointer truncate"
+              >
+                {drivers.map((drv) => {
+                  const veh = vehicles.find(
+                    (v) =>
+                      v.id === drv.assignedVehicleId ||
+                      v.assignedDriverId === drv.id
+                  );
+                  const dniEnd =
+                    drv.dni && drv.dni.length >= 3
+                      ? drv.dni.slice(-3)
+                      : drv.dni || '---';
+                  return (
+                    <option key={drv.id} value={drv.id}>
+                      {drv.name} (DNI {dniEnd}) {veh ? `· ${veh.plate} ${veh.model}` : '· Sin unidad'}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
           </div>
         )}
       </div>
@@ -637,9 +638,9 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
            VIEW B: INDIVIDUAL DRIVER DASHBOARD VIEW (DATOS DEL CHOFER Y VEHICULO ASIGNADO)
            ========================================================================= */
         activeDriver && (
-          <div className="space-y-6">
+          <div className="space-y-6 w-full max-w-full min-w-0">
             {/* Quick Switch Pills between Drivers */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+            <div className="flex items-center gap-2 overflow-x-auto pb-1.5 no-scrollbar scrollbar-none w-full max-w-full min-w-0">
               <span className="text-xs font-bold text-[#64748B] shrink-0">
                 Choferes:
               </span>
@@ -656,31 +657,31 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
                   <User className="w-3 h-3" />
                   <span>{d.name}</span>
                   {d.assignedVehicleId ? (
-                    <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
                   ) : (
-                    <span className="w-2 h-2 rounded-full bg-amber-400" />
+                    <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0" />
                   )}
                 </button>
               ))}
             </div>
 
             {/* TWO MAIN CARDS: CHOFER CARD & VEHICULO ASIGNADO CARD */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 w-full max-w-full min-w-0">
               {/* 1. DATOS DEL CHOFER */}
-              <div className="bg-white rounded-3xl p-5 sm:p-6 border border-[#DCE3ED] shadow-xs flex flex-col justify-between">
+              <div className="bg-white rounded-3xl p-4 sm:p-6 border border-[#DCE3ED] shadow-xs flex flex-col justify-between overflow-hidden min-w-0 w-full">
                 <div>
-                  <div className="flex items-start justify-between gap-3 pb-4 border-b border-[#DCE3ED]">
-                    <div className="flex items-center gap-3.5">
-                      <div className="w-14 h-14 rounded-2xl bg-[#DBEAFE] text-[#2563EB] flex items-center justify-center font-black text-xl shadow-inner">
+                  <div className="flex items-start justify-between gap-2.5 sm:gap-3 pb-4 border-b border-[#DCE3ED] min-w-0 w-full">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#DBEAFE] text-[#2563EB] flex items-center justify-center font-black text-lg sm:text-xl shadow-inner shrink-0">
                         {activeDriver.name.charAt(0)}
                       </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h2 className="text-lg sm:text-xl font-black text-[#172554]">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                          <h2 className="text-base sm:text-xl font-black text-[#172554] truncate">
                             {activeDriver.name}
                           </h2>
                           <span
-                            className={`text-[10px] font-black px-2 py-0.5 rounded-full uppercase ${
+                            className={`text-[10px] font-black px-2 py-0.5 rounded-full uppercase shrink-0 ${
                               activeDriver.status === 'activo'
                                 ? 'bg-emerald-100 text-emerald-800'
                                 : activeDriver.status === 'licencia'
@@ -691,7 +692,7 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
                             {activeDriver.status}
                           </span>
                         </div>
-                        <div className="text-xs text-[#64748B] font-mono mt-0.5">
+                        <div className="text-xs text-[#64748B] font-mono mt-0.5 truncate">
                           DNI: <strong>{activeDriver.dni || 'No registrado'}</strong>
                         </div>
                       </div>
@@ -700,7 +701,7 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
                     {isOwner && (
                       <button
                         onClick={() => setDriverToEdit(activeDriver)}
-                        className="p-2 rounded-xl bg-slate-100 hover:bg-[#DBEAFE] text-slate-600 hover:text-[#2563EB] transition cursor-pointer text-xs font-semibold flex items-center gap-1"
+                        className="p-2 rounded-xl bg-slate-100 hover:bg-[#DBEAFE] text-slate-600 hover:text-[#2563EB] transition cursor-pointer text-xs font-semibold flex items-center gap-1 shrink-0"
                         title="Editar datos del chofer"
                       >
                         <Edit3 className="w-4 h-4" />
@@ -710,24 +711,24 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
                   </div>
 
                   {/* Driver Details List */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mt-4 text-xs">
-                    <div className="p-3 rounded-2xl bg-[#F3F6FA] border border-[#DCE3ED]/80">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5 mt-4 text-xs">
+                    <div className="p-3 rounded-2xl bg-[#F3F6FA] border border-[#DCE3ED]/80 min-w-0">
                       <div className="text-[#64748B] text-[11px] font-semibold mb-0.5">
                         Licencia de Conducir
                       </div>
-                      <div className="font-bold text-slate-900 font-mono">
+                      <div className="font-bold text-slate-900 font-mono truncate">
                         {activeDriver.licenseNumber || 'Sin número'}
                       </div>
-                      <div className="text-[11px] text-[#2563EB] font-medium mt-0.5">
+                      <div className="text-[11px] text-[#2563EB] font-medium mt-0.5 truncate">
                         {activeDriver.licenseCategory}
                       </div>
                     </div>
 
-                    <div className="p-3 rounded-2xl bg-[#F3F6FA] border border-[#DCE3ED]/80">
+                    <div className="p-3 rounded-2xl bg-[#F3F6FA] border border-[#DCE3ED]/80 min-w-0">
                       <div className="text-[#64748B] text-[11px] font-semibold mb-0.5">
                         Vencimiento de Licencia
                       </div>
-                      <div className="font-bold text-slate-900">
+                      <div className="font-bold text-slate-900 truncate">
                         {activeDriver.licenseExpiry
                           ? new Date(
                               activeDriver.licenseExpiry + 'T00:00:00'
@@ -753,24 +754,24 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
                       </div>
                     </div>
 
-                    <div className="p-3 rounded-2xl bg-[#F3F6FA] border border-[#DCE3ED]/80">
+                    <div className="p-3 rounded-2xl bg-[#F3F6FA] border border-[#DCE3ED]/80 min-w-0">
                       <div className="text-[#64748B] text-[11px] font-semibold mb-0.5">
                         Teléfono Móvil
                       </div>
                       {activeDriver.phone ? (
                         <a
                           href={`tel:${activeDriver.phone}`}
-                          className="font-bold text-[#2563EB] hover:underline flex items-center gap-1.5"
+                          className="font-bold text-[#2563EB] hover:underline flex items-center gap-1.5 truncate"
                         >
-                          <Phone className="w-3.5 h-3.5" />
-                          <span>{activeDriver.phone}</span>
+                          <Phone className="w-3.5 h-3.5 shrink-0" />
+                          <span className="truncate">{activeDriver.phone}</span>
                         </a>
                       ) : (
                         <span className="text-slate-400">No especificado</span>
                       )}
                     </div>
 
-                    <div className="p-3 rounded-2xl bg-[#F3F6FA] border border-[#DCE3ED]/80">
+                    <div className="p-3 rounded-2xl bg-[#F3F6FA] border border-[#DCE3ED]/80 min-w-0">
                       <div className="text-[#64748B] text-[11px] font-semibold mb-0.5">
                         Correo Corporativo
                       </div>
@@ -779,7 +780,7 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
                           href={`mailto:${activeDriver.email}`}
                           className="font-bold text-[#2563EB] hover:underline flex items-center gap-1.5 truncate"
                         >
-                          <Mail className="w-3.5 h-3.5" />
+                          <Mail className="w-3.5 h-3.5 shrink-0" />
                           <span className="truncate">{activeDriver.email}</span>
                         </a>
                       ) : (
@@ -794,34 +795,34 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
                       <div className="font-bold text-[11px] text-amber-900 mb-0.5">
                         Observaciones Operativas:
                       </div>
-                      <div>{activeDriver.notes}</div>
+                      <div className="break-words">{activeDriver.notes}</div>
                     </div>
                   )}
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
-                  <span className="text-[11px] text-[#64748B]">
-                    ID Conductor: <code className="font-mono">{activeDriver.id}</code>
+                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between min-w-0">
+                  <span className="text-[11px] text-[#64748B] truncate">
+                    ID: <code className="font-mono">{activeDriver.id}</code>
                   </span>
                   <button
                     onClick={() => setCurrentTab('conductores')}
-                    className="text-xs font-semibold text-[#2563EB] hover:underline flex items-center gap-1 cursor-pointer"
+                    className="text-xs font-semibold text-[#2563EB] hover:underline flex items-center gap-1 cursor-pointer shrink-0 ml-2"
                   >
-                    <span>Ver módulo choferes</span>
+                    <span>Ver choferes</span>
                     <ChevronRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
 
               {/* 2. DATOS DEL VEHICULO ASIGNADO */}
-              <div className="bg-white rounded-3xl p-5 sm:p-6 border border-[#DCE3ED] shadow-xs flex flex-col justify-between">
+              <div className="bg-white rounded-3xl p-4 sm:p-6 border border-[#DCE3ED] shadow-xs flex flex-col justify-between overflow-hidden min-w-0 w-full">
                 <div>
-                  <div className="flex items-start justify-between gap-3 pb-4 border-b border-[#DCE3ED]">
-                    <div>
-                      <div className="text-xs font-bold text-[#64748B] uppercase tracking-wider">
+                  <div className="flex items-start justify-between gap-2.5 sm:gap-3 pb-4 border-b border-[#DCE3ED] min-w-0 w-full">
+                    <div className="min-w-0 flex-1">
+                      <div className="text-xs font-bold text-[#64748B] uppercase tracking-wider truncate">
                         Unidad Asignada al Conductor
                       </div>
-                      <h2 className="text-lg sm:text-xl font-black text-[#172554] mt-0.5">
+                      <h2 className="text-base sm:text-xl font-black text-[#172554] mt-0.5 truncate">
                         {assignedVehicle
                           ? `${assignedVehicle.brand} ${assignedVehicle.model} ${assignedVehicle.year}`
                           : 'Sin Vehículo Asignado'}
@@ -830,7 +831,7 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
 
                     {assignedVehicle ? (
                       <span
-                        className={`text-[10px] font-black px-2.5 py-1 rounded-full uppercase ${
+                        className={`text-[10px] font-black px-2.5 py-1 rounded-full uppercase shrink-0 ${
                           assignedVehicle.fleetStatus === 'disponible'
                             ? 'bg-emerald-100 text-emerald-800'
                             : assignedVehicle.fleetStatus === 'en_uso'
@@ -843,7 +844,7 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
                         {assignedVehicle.fleetStatus || 'disponible'}
                       </span>
                     ) : (
-                      <span className="text-[10px] font-black px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 uppercase">
+                      <span className="text-[10px] font-black px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 uppercase shrink-0">
                         Disponible
                       </span>
                     )}
@@ -851,28 +852,28 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
 
                   {/* Vehicle details when assigned */}
                   {assignedVehicle ? (
-                    <div className="space-y-4 mt-4">
+                    <div className="space-y-4 mt-4 min-w-0 w-full">
                       {/* Argentine Plate & Key Info Strip */}
-                      <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl bg-[#172554] text-white">
-                        <div className="flex items-center gap-3">
-                          <span className="font-mono text-base font-black px-3 py-1 rounded-xl bg-slate-950 text-white border border-blue-400/40 tracking-wider">
+                      <div className="flex flex-wrap items-center justify-between gap-2.5 sm:gap-3 p-3 sm:p-3.5 rounded-2xl bg-[#172554] text-white min-w-0 w-full">
+                        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                          <span className="font-mono text-sm sm:text-base font-black px-2.5 sm:px-3 py-1 rounded-xl bg-slate-950 text-white border border-blue-400/40 tracking-wider shrink-0">
                             {assignedVehicle.plate}
                           </span>
-                          <div>
-                            <div className="text-xs font-bold text-white">
+                          <div className="min-w-0">
+                            <div className="text-xs font-bold text-white truncate">
                               {assignedVehicle.brand} {assignedVehicle.model}
                             </div>
-                            <div className="text-[11px] text-blue-200">
+                            <div className="text-[11px] text-blue-200 truncate">
                               Año {assignedVehicle.year} · {assignedVehicle.color}
                             </div>
                           </div>
                         </div>
 
-                        <div className="text-right">
-                          <div className="text-[11px] text-blue-200">
+                        <div className="text-right shrink-0">
+                          <div className="text-[10px] sm:text-[11px] text-blue-200">
                             Odómetro Actual
                           </div>
-                          <div className="text-sm font-black font-mono text-white">
+                          <div className="text-xs sm:text-sm font-black font-mono text-white">
                             {assignedVehicle.currentMileage.toLocaleString('es-AR')} km
                           </div>
                         </div>

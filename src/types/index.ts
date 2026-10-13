@@ -231,6 +231,7 @@ export interface Incident {
   claimNumber?: string; // Número de denuncia aseguradora
   policeReportNumber?: string;
   photosCount: number;
+  photos?: string[];
   // Enterprise fields
   driverId?: string;
   driverName?: string;

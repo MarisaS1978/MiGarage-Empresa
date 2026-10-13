@@ -97,7 +97,7 @@ const MainAppContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F3F6FA] text-[#1E293B] flex flex-col antialiased selection:bg-[#2563EB] selection:text-white">
+    <div className="min-h-screen bg-[#F3F6FA] text-[#1E293B] flex flex-col antialiased selection:bg-[#2563EB] selection:text-white overflow-x-hidden w-full max-w-full">
       {/* Top Header */}
       <Header
         onOpenQuickAction={() => handleOpenQuickAction(isOwner ? 'mantenimiento' : 'combustible')}
@@ -105,12 +105,12 @@ const MainAppContent: React.FC = () => {
       />
 
       {/* Main Layout Container */}
-      <div className="flex-1 flex max-w-7xl w-full mx-auto">
+      <div className="flex-1 flex max-w-7xl w-full mx-auto min-w-0 overflow-x-hidden">
         {/* Desktop Sidebar */}
         <Sidebar />
 
         {/* Dynamic Content Area */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24 lg:pb-12 overflow-x-hidden min-w-0">
+        <main className="flex-1 px-3 py-4 sm:p-6 lg:p-8 pb-24 lg:pb-12 overflow-x-hidden min-w-0 w-full max-w-full">
           {renderActiveView()}
         </main>
       </div>

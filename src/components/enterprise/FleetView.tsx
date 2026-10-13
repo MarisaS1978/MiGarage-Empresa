@@ -184,14 +184,14 @@ export const FleetView: React.FC<FleetViewProps> = ({
           return (
             <div
               key={veh.id}
-              className="bg-white rounded-3xl p-5 border border-[#DCE3ED] hover:border-[#2563EB]/50 transition shadow-xs flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 relative"
+              className="bg-white rounded-3xl p-3.5 sm:p-5 border border-[#DCE3ED] hover:border-[#2563EB]/50 transition shadow-xs flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 sm:gap-4 relative w-full min-w-0 max-w-full"
             >
               {/* Left Details */}
               <div
                 onClick={() => onSelectVehicle(veh.id)}
-                className="flex items-start sm:items-center gap-4 cursor-pointer flex-1 min-w-0"
+                className="flex items-start sm:items-center gap-3 sm:gap-4 cursor-pointer flex-1 min-w-0 w-full"
               >
-                <div className="w-16 h-16 rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shrink-0">
+                <div className="w-13 h-13 sm:w-16 sm:h-16 rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shrink-0">
                   {veh.photoUrl ? (
                     <img
                       src={veh.photoUrl}
@@ -200,42 +200,42 @@ export const FleetView: React.FC<FleetViewProps> = ({
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-slate-400">
-                      <Truck className="w-8 h-8" />
+                      <Truck className="w-6 h-6 sm:w-8 sm:h-8" />
                     </div>
                   )}
                 </div>
 
-                <div className="space-y-1 min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-mono text-xs font-black px-2 py-0.5 rounded bg-[#172554] text-white tracking-wider">
+                <div className="space-y-1 min-w-0 flex-1 overflow-hidden">
+                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                    <span className="font-mono text-[11px] sm:text-xs font-black px-2 py-0.5 rounded bg-[#172554] text-white tracking-wider shrink-0">
                       {veh.plate}
                     </span>
-                    <span className="text-xs font-semibold text-[#64748B]">
+                    <span className="text-[11px] sm:text-xs font-semibold text-[#64748B] truncate max-w-[150px] sm:max-w-none">
                       {veh.year} · {veh.type} · {veh.color}
                     </span>
                     {veh.costCenter && (
-                      <span className="text-xs font-semibold text-blue-900 bg-[#DBEAFE] px-2 py-0.5 rounded border border-blue-200">
+                      <span className="text-[10px] sm:text-xs font-semibold text-blue-900 bg-[#DBEAFE] px-2 py-0.5 rounded border border-blue-200 truncate max-w-[130px] sm:max-w-[200px]">
                         🏢 {veh.costCenter}
                       </span>
                     )}
                   </div>
 
-                  <h3 className="text-base font-bold text-[#172554] truncate">
+                  <h3 className="text-sm sm:text-base font-bold text-[#172554] truncate max-w-full">
                     {veh.brand} {veh.model}{' '}
                     {veh.version && (
                       <span className="text-xs text-[#64748B] font-normal">{veh.version}</span>
                     )}
                   </h3>
 
-                  <div className="flex flex-wrap items-center gap-4 text-xs text-slate-600">
-                    <div className="flex items-center gap-1 font-mono font-bold text-slate-800">
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-600">
+                    <div className="flex items-center gap-1 font-mono font-bold text-slate-800 shrink-0">
                       <Gauge className="w-3.5 h-3.5 text-[#2563EB]" />
                       <span>{veh.currentMileage.toLocaleString('es-AR')} km</span>
                     </div>
 
-                    <div className="flex items-center gap-1">
-                      <User className="w-3.5 h-3.5 text-slate-500" />
-                      <span>
+                    <div className="flex items-center gap-1 min-w-0 max-w-full">
+                      <User className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                      <span className="truncate">
                         Chofer:{' '}
                         {veh.assignedDriverName ? (
                           <strong className="text-[#172554] font-semibold">
@@ -251,74 +251,78 @@ export const FleetView: React.FC<FleetViewProps> = ({
               </div>
 
               {/* Right: Quick Status, Actions & 3-Dots Menu */}
-              <div className="flex flex-wrap items-center gap-2 sm:gap-3 self-stretch lg:self-center justify-between lg:justify-end pt-3 lg:pt-0 border-t lg:border-t-0 border-slate-100">
+              <div className="flex items-center justify-between gap-2 pt-2.5 lg:pt-0 border-t lg:border-t-0 border-slate-100 w-full lg:w-auto min-w-0">
                 {/* Status Switcher Select (Owner only) */}
-                {isOwner ? (
-                  <select
-                    value={currentStatus}
-                    onChange={(e) => updateFleetStatus(veh.id, e.target.value as VehicleStatus)}
-                    className={`text-xs font-bold py-2 px-3 rounded-xl border cursor-pointer focus:outline-hidden ${badge.bg}`}
-                  >
-                    <option value="disponible">🟢 Disponible</option>
-                    <option value="en_uso">🔵 En uso</option>
-                    <option value="mantenimiento">🟡 Mantenimiento</option>
-                    <option value="fuera_de_servicio">🔴 Fuera de servicio</option>
-                  </select>
-                ) : (
-                  <span className={`text-xs font-bold py-1.5 px-3 rounded-xl border ${badge.bg}`}>
-                    {badge.label}
-                  </span>
-                )}
+                <div className="min-w-0 flex-1 sm:flex-initial">
+                  {isOwner ? (
+                    <select
+                      value={currentStatus}
+                      onChange={(e) => updateFleetStatus(veh.id, e.target.value as VehicleStatus)}
+                      className={`w-full sm:w-auto text-xs font-bold py-1.5 sm:py-2 px-2 sm:px-3 rounded-xl border cursor-pointer focus:outline-hidden truncate ${badge.bg}`}
+                    >
+                      <option value="disponible">🟢 Disponible</option>
+                      <option value="en_uso">🔵 En uso</option>
+                      <option value="mantenimiento">🟡 Mantenimiento</option>
+                      <option value="fuera_de_servicio">🔴 Fuera servicio</option>
+                    </select>
+                  ) : (
+                    <span className={`inline-block text-xs font-bold py-1.5 px-2.5 sm:px-3 rounded-xl border truncate ${badge.bg}`}>
+                      {badge.label}
+                    </span>
+                  )}
+                </div>
 
-                {/* Quick Driver Assign / Change Button (Allowed for BOTH Owner and Driver) */}
-                <button
-                  onClick={() => setVehicleToAssign(veh)}
-                  className="px-3 py-2 rounded-xl bg-[#DBEAFE] hover:bg-blue-100 text-[#2563EB] text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer"
-                  title="Asignar o cambiar chofer"
-                >
-                  <UserCheck className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">
-                    {veh.assignedDriverId ? 'Cambiar Chofer' : 'Asignar Chofer'}
-                  </span>
-                </button>
-
-                {/* View Details Button */}
-                <button
-                  onClick={() => onSelectVehicle(veh.id)}
-                  className="px-3.5 py-2 rounded-xl bg-[#172554] hover:bg-slate-900 text-white text-xs font-semibold transition cursor-pointer flex items-center gap-1"
-                >
-                  <span>Ver Ficha</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </button>
-
-                {/* Quick Share Insurance in Accident Button */}
-                <button
-                  onClick={() => openShareInsurance(veh.id)}
-                  className="p-2 rounded-xl border border-blue-200 bg-blue-50/80 hover:bg-blue-100 text-blue-700 transition cursor-pointer"
-                  title="Compartir datos del seguro en caso de siniestro o auxilio"
-                >
-                  <Shield className="w-4 h-4 text-blue-600" />
-                </button>
-
-                {/* 3-Dots Actions Menu */}
-                <div className="relative">
+                {/* Action Buttons */}
+                <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                  {/* Quick Driver Assign (Desktop) */}
                   <button
-                    onClick={() =>
-                      setActiveMenuVehicleId(isMenuOpen ? null : veh.id)
-                    }
-                    className="p-2 rounded-xl border border-[#DCE3ED] hover:bg-slate-50 text-slate-600 cursor-pointer"
-                    title="Acciones adicionales"
+                    onClick={() => setVehicleToAssign(veh)}
+                    className="hidden sm:flex px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-[#DBEAFE] hover:bg-blue-100 text-[#2563EB] text-xs font-semibold items-center gap-1.5 transition cursor-pointer shrink-0"
+                    title="Asignar o cambiar chofer"
                   >
-                    <MoreVertical className="w-4 h-4" />
+                    <UserCheck className="w-3.5 h-3.5" />
+                    <span>
+                      {veh.assignedDriverId ? 'Cambiar Chofer' : 'Asignar Chofer'}
+                    </span>
                   </button>
 
-                  {isMenuOpen && (
-                    <>
-                      <div
-                        className="fixed inset-0 z-30"
-                        onClick={() => setActiveMenuVehicleId(null)}
-                      />
-                      <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white border border-slate-200 shadow-xl p-1.5 z-40 text-xs">
+                  {/* Quick Share Insurance */}
+                  <button
+                    onClick={() => openShareInsurance(veh.id)}
+                    className="p-1.5 sm:p-2 rounded-xl border border-blue-200 bg-blue-50/80 hover:bg-blue-100 text-blue-700 transition cursor-pointer shrink-0"
+                    title="Compartir datos del seguro en caso de siniestro o auxilio"
+                  >
+                    <Shield className="w-4 h-4 text-blue-600" />
+                  </button>
+
+                  {/* View Details Button */}
+                  <button
+                    onClick={() => onSelectVehicle(veh.id)}
+                    className="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-[#172554] hover:bg-slate-900 text-white text-xs font-semibold transition cursor-pointer flex items-center gap-1 shrink-0"
+                  >
+                    <span>Ver Ficha</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+
+                  {/* 3-Dots Actions Menu */}
+                  <div className="relative shrink-0">
+                    <button
+                      onClick={() =>
+                        setActiveMenuVehicleId(isMenuOpen ? null : veh.id)
+                      }
+                      className="p-1.5 sm:p-2 rounded-xl border border-[#DCE3ED] hover:bg-slate-50 text-slate-600 cursor-pointer"
+                      title="Acciones adicionales"
+                    >
+                      <MoreVertical className="w-4 h-4" />
+                    </button>
+
+                    {isMenuOpen && (
+                      <>
+                        <div
+                          className="fixed inset-0 z-40"
+                          onClick={() => setActiveMenuVehicleId(null)}
+                        />
+                        <div className="absolute right-0 top-full mt-1.5 w-56 max-w-[calc(100vw-2.5rem)] rounded-2xl bg-white border border-slate-200 shadow-xl p-1.5 z-50 text-xs">
                         <button
                           onClick={() => {
                             setActiveMenuVehicleId(null);
@@ -397,9 +401,10 @@ export const FleetView: React.FC<FleetViewProps> = ({
                 </div>
               </div>
             </div>
-          );
-        })}
-      </div>
+          </div>
+        );
+      })}
+    </div>
 
       {/* Edit Vehicle Modal */}
       {vehicleToEdit && (

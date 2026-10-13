@@ -106,14 +106,23 @@ export const MobileNav: React.FC = () => {
                 { id: 'configuracion', label: 'Configuración', icon: Settings },
               ].map((item) => {
                 const Icon = item.icon;
+                const isActive = currentTab === item.id;
                 return (
                   <button
                     key={item.id}
                     onClick={() => handleSelectTab(item.id)}
-                    className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-left text-xs text-white cursor-pointer"
+                    className={`flex items-center gap-2.5 px-3 py-3 rounded-2xl border text-left text-xs font-semibold transition cursor-pointer ${
+                      isActive
+                        ? 'bg-[#2563EB] text-white border-blue-400 shadow-md shadow-blue-950/40'
+                        : 'bg-slate-850 hover:bg-slate-800 bg-[#1e293b] border-slate-700/80 text-slate-100 hover:text-white'
+                    }`}
                   >
-                    <Icon className="w-4 h-4 text-[#DBEAFE]" />
-                    <span className="font-semibold">{item.label}</span>
+                    <Icon
+                      className={`w-4 h-4 shrink-0 ${
+                        isActive ? 'text-white' : 'text-blue-400'
+                      }`}
+                    />
+                    <span className="truncate">{item.label}</span>
                   </button>
                 );
               })}
@@ -158,7 +167,9 @@ export const MobileNav: React.FC = () => {
 
         <button
           onClick={() => setShowDrawer(true)}
-          className="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-blue-200 hover:text-white cursor-pointer"
+          className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition cursor-pointer ${
+            showDrawer ? 'text-white font-bold bg-[#2563EB]/40' : 'hover:text-white'
+          }`}
         >
           <Menu className="w-4 h-4" />
           <span>Más</span>
