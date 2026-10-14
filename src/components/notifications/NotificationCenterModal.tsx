@@ -226,62 +226,70 @@ export const NotificationCenterModal: React.FC<NotificationCenterModalProps> = (
           )}
         </div>
 
-        {/* Filter Pills & Actions */}
-        <div className="px-3.5 sm:px-5 py-2.5 flex items-center justify-between gap-2 overflow-x-auto border-b border-slate-100 bg-white shrink-0 scrollbar-none">
-          <div className="flex items-center gap-1.5 text-xs font-semibold">
-            <button
-              onClick={() => setActiveFilter('todas')}
-              className={`px-3 py-1.5 rounded-xl transition cursor-pointer shrink-0 ${
-                activeFilter === 'todas'
-                  ? 'bg-slate-900 text-white font-bold'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-              }`}
-            >
-              Todas ({alerts.length})
-            </button>
-            <button
-              onClick={() => setActiveFilter('mantenimiento')}
-              className={`px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1 shrink-0 ${
-                activeFilter === 'mantenimiento'
-                  ? 'bg-teal-600 text-white font-bold shadow-xs'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-              }`}
-            >
-              <Wrench className="w-3.5 h-3.5 text-teal-500 group-hover:text-teal-700" />
-              <span>Services ({alerts.filter((a) => a.type === 'mantenimiento').length})</span>
-            </button>
-            <button
-              onClick={() => setActiveFilter('seguro')}
-              className={`px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1 shrink-0 ${
-                activeFilter === 'seguro'
-                  ? 'bg-blue-600 text-white font-bold shadow-xs'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-              }`}
-            >
-              <Shield className="w-3.5 h-3.5 text-blue-500" />
-              <span>Seguros ({alerts.filter((a) => a.type === 'seguro').length})</span>
-            </button>
-            <button
-              onClick={() => setActiveFilter('vtv')}
-              className={`px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1 shrink-0 ${
-                activeFilter === 'vtv'
-                  ? 'bg-amber-600 text-white font-bold shadow-xs'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-              }`}
-            >
-              <FileText className="w-3.5 h-3.5 text-amber-500" />
-              <span>VTV ({alerts.filter((a) => a.type === 'vtv').length})</span>
-            </button>
-          </div>
+        {/* Filter Pills & Actions Bar */}
+        <div className="px-3.5 sm:px-5 py-2 border-b border-slate-100 bg-white shrink-0">
+          <div className="flex items-center justify-between gap-2.5">
+            {/* Scrollable Category Filter Pills - isolated scroll container */}
+            <div className="flex items-center gap-1.5 text-xs font-semibold overflow-x-auto scrollbar-none py-1 min-w-0 flex-1">
+              <button
+                onClick={() => setActiveFilter('todas')}
+                className={`px-3 py-1.5 rounded-xl transition cursor-pointer shrink-0 ${
+                  activeFilter === 'todas'
+                    ? 'bg-slate-900 text-white font-bold shadow-xs'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                Todas ({alerts.length})
+              </button>
+              <button
+                onClick={() => setActiveFilter('mantenimiento')}
+                className={`px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1.5 shrink-0 ${
+                  activeFilter === 'mantenimiento'
+                    ? 'bg-teal-600 text-white font-bold shadow-xs'
+                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                }`}
+              >
+                <Wrench className="w-3.5 h-3.5 text-teal-500 group-hover:text-teal-700" />
+                <span>Services ({alerts.filter((a) => a.type === 'mantenimiento').length})</span>
+              </button>
+              <button
+                onClick={() => setActiveFilter('seguro')}
+                className={`px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1.5 shrink-0 ${
+                  activeFilter === 'seguro'
+                    ? 'bg-blue-600 text-white font-bold shadow-xs'
+                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                }`}
+              >
+                <Shield className="w-3.5 h-3.5 text-blue-500" />
+                <span>Seguros ({alerts.filter((a) => a.type === 'seguro').length})</span>
+              </button>
+              <button
+                onClick={() => setActiveFilter('vtv')}
+                className={`px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1.5 shrink-0 ${
+                  activeFilter === 'vtv'
+                    ? 'bg-amber-600 text-white font-bold shadow-xs'
+                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                }`}
+              >
+                <FileText className="w-3.5 h-3.5 text-amber-500" />
+                <span>VTV ({alerts.filter((a) => a.type === 'vtv').length})</span>
+              </button>
+            </div>
 
-          {unreadAlertsCount > 0 && (
-            <button
-              onClick={markAllAlertsAsRead}
-              className="text-xs text-teal-700 hover:text-teal-900 font-bold whitespace-nowrap cursor-pointer shrink-0 ml-2"
-            >
-              Marcar leídas
-            </button>
-          )}
+            {/* Mark all as read action - strictly separated and shrink-0 */}
+            {unreadAlertsCount > 0 && (
+              <div className="shrink-0 pl-1.5 border-l border-slate-200">
+                <button
+                  onClick={markAllAlertsAsRead}
+                  className="text-[11px] sm:text-xs text-teal-700 hover:text-teal-900 bg-teal-50 hover:bg-teal-100 border border-teal-200/80 px-2.5 py-1.5 rounded-xl font-bold whitespace-nowrap cursor-pointer transition flex items-center gap-1 shadow-2xs"
+                  title="Marcar todas las alertas como leídas"
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5 text-teal-600" />
+                  <span>Marcar leídas</span>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Alerts Content List */}

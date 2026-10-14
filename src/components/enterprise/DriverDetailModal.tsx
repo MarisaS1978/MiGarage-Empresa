@@ -235,13 +235,13 @@ export const DriverDetailModal: React.FC<DriverDetailModalProps> = ({
               </div>
 
               {assignedVehicle ? (
-                <div className="flex items-center justify-between p-3 rounded-xl bg-[#F3F6FA] border border-[#DCE3ED]">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center font-mono font-bold text-xs">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl bg-[#F3F6FA] border border-[#DCE3ED] gap-2.5">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center font-mono font-bold text-xs shrink-0">
                       {assignedVehicle.plate}
                     </div>
-                    <div>
-                      <div className="font-bold text-slate-900 text-xs">
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-slate-900 text-xs truncate">
                         {assignedVehicle.brand} {assignedVehicle.model}{' '}
                         {assignedVehicle.version && (
                           <span className="text-slate-500 font-normal">
@@ -249,7 +249,7 @@ export const DriverDetailModal: React.FC<DriverDetailModalProps> = ({
                           </span>
                         )}
                       </div>
-                      <div className="text-[11px] text-slate-500">
+                      <div className="text-[11px] text-slate-500 truncate">
                         {assignedVehicle.year} · {assignedVehicle.type} ·{' '}
                         {assignedVehicle.currentMileage.toLocaleString('es-AR')} km ·{' '}
                         <strong className="text-blue-800">{assignedVehicle.costCenter}</strong>
@@ -257,7 +257,7 @@ export const DriverDetailModal: React.FC<DriverDetailModalProps> = ({
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-1.5 shrink-0">
+                  <div className="flex items-center gap-1.5 shrink-0 self-end sm:self-center">
                     <button
                       onClick={() => openShareInsurance(assignedVehicle.id)}
                       className="px-2.5 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold flex items-center gap-1 cursor-pointer transition"
@@ -302,27 +302,51 @@ export const DriverDetailModal: React.FC<DriverDetailModalProps> = ({
             {/* Siniestros asociados */}
             {driverIncidents.length > 0 && (
               <div className="p-4 rounded-2xl bg-white border border-[#DCE3ED]">
-                <div className="flex items-center gap-2 font-bold text-xs text-[#172554] mb-2.5">
-                  <ShieldAlert className="w-4 h-4 text-amber-600" />
+                <div className="flex items-center gap-2 font-bold text-xs text-[#172554] mb-3">
+                  <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0" />
                   <span>Historial de Siniestros Vinculados ({driverIncidents.length})</span>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-2.5">
                   {driverIncidents.map((inc) => (
                     <div
                       key={inc.id}
-                      className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs flex items-center justify-between"
+                      className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs flex flex-col sm:flex-row sm:items-start justify-between gap-2.5 overflow-hidden"
                     >
-                      <div>
-                        <div className="font-bold text-slate-900">
-                          {inc.type.toUpperCase()} — {inc.date} ({inc.vehicleName})
+                      <div className="min-w-0 flex-1 space-y-1">
+                        <div className="flex flex-wrap items-center gap-1.5 font-bold text-slate-900 leading-snug">
+                          <span className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 uppercase font-bold text-[10px] shrink-0">
+                            {inc.type}
+                          </span>
+                          <span className="text-slate-800 font-mono text-[11px] shrink-0">{inc.date}</span>
+                          <span className="text-slate-600 font-medium break-words">
+                            · {inc.vehicleName}
+                          </span>
                         </div>
-                        <div className="text-[11px] text-slate-500 truncate max-w-sm">
-                          {inc.description}
-                        </div>
+                        {inc.description && (
+                          <div className="text-[11px] text-slate-600 leading-relaxed break-words whitespace-normal">
+                            {inc.description}
+                          </div>
+                        )}
+                        {inc.location && (
+                          <div className="text-[10px] text-slate-500 flex flex-wrap items-center gap-1 pt-0.5">
+                            <span className="text-slate-400">Lugar:</span>
+                            <span className="font-medium text-slate-700 break-words">{inc.location}</span>
+                          </div>
+                        )}
                       </div>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200 text-slate-800">
-                        {inc.status}
-                      </span>
+                      <div className="shrink-0 self-start sm:self-auto pt-0.5">
+                        <span
+                          className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full inline-block whitespace-nowrap capitalize ${
+                            inc.status === 'resuelto'
+                              ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                              : inc.status === 'rechazado'
+                              ? 'bg-rose-100 text-rose-800 border border-rose-200'
+                              : 'bg-amber-100 text-amber-800 border border-amber-200'
+                          }`}
+                        >
+                          {inc.status}
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>
