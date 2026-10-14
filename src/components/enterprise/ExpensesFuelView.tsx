@@ -133,7 +133,10 @@ export const ExpensesFuelView: React.FC = () => {
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-b border-[#DCE3ED] pb-3">
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setSubTab('gastos')}
+            onClick={() => {
+              setSubTab('gastos');
+              window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+            }}
             className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer flex items-center gap-2 ${
               subTab === 'gastos'
                 ? 'bg-[#172554] text-white shadow-xs'
@@ -145,7 +148,10 @@ export const ExpensesFuelView: React.FC = () => {
           </button>
 
           <button
-            onClick={() => setSubTab('combustible')}
+            onClick={() => {
+              setSubTab('combustible');
+              window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+            }}
             className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer flex items-center gap-2 ${
               subTab === 'combustible'
                 ? 'bg-[#2563EB] text-white shadow-xs'
@@ -157,16 +163,26 @@ export const ExpensesFuelView: React.FC = () => {
           </button>
         </div>
 
-        <div className="relative w-full sm:w-72">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            (document.activeElement as HTMLElement)?.blur();
+          }}
+          className="relative w-full sm:w-72"
+        >
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
-            type="text"
+            type="search"
+            enterKeyHint="search"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+            }}
             placeholder="Buscar por vehículo o detalle..."
-            className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-white border border-[#DCE3ED] text-xs text-slate-800 placeholder-slate-400"
+            className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-white border border-[#DCE3ED] text-xs text-slate-800 placeholder-slate-400 focus:outline-hidden focus:border-[#2563EB]"
           />
-        </div>
+        </form>
       </div>
 
       {/* SUBTAB GASTOS */}

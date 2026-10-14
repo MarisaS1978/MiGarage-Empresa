@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useGarage } from '../../context/GarageContext';
 import { ExpirationAlert, ExpirationAlertType } from '../../types';
 import {
@@ -42,6 +42,11 @@ export const NotificationCenterModal: React.FC<NotificationCenterModalProps> = (
 
   const [activeFilter, setActiveFilter] = useState<'todas' | ExpirationAlertType>('todas');
   const [showConfig, setShowConfig] = useState(false);
+  const alertsListRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    alertsListRef.current?.scrollTo({ top: 0, behavior: 'instant' });
+  }, [activeFilter]);
 
   const filteredAlerts = alerts.filter((alert) => {
     if (activeFilter === 'todas') return true;
@@ -280,7 +285,7 @@ export const NotificationCenterModal: React.FC<NotificationCenterModalProps> = (
         </div>
 
         {/* Alerts Content List */}
-        <div className="p-5 sm:p-6 overflow-y-auto space-y-3 flex-1 bg-slate-50">
+        <div ref={alertsListRef} className="p-3.5 sm:p-6 overflow-y-auto space-y-3 flex-1 bg-slate-50">
           {filteredAlerts.length === 0 ? (
             <div className="text-center py-12 bg-white rounded-3xl border border-slate-200 p-8">
               <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
@@ -298,7 +303,7 @@ export const NotificationCenterModal: React.FC<NotificationCenterModalProps> = (
               return (
                 <div
                   key={alert.id}
-                  className={`bg-white rounded-2xl p-4 border transition-all duration-200 shadow-xs space-y-3 ${
+                  className={`bg-white rounded-2xl p-3.5 sm:p-4 border transition-all duration-200 shadow-xs space-y-3 overflow-hidden ${
                     !alert.read
                       ? 'border-slate-300 ring-1 ring-teal-500/30'
                       : 'border-slate-200 opacity-90'
@@ -343,11 +348,11 @@ export const NotificationCenterModal: React.FC<NotificationCenterModalProps> = (
                   </div>
 
                   {/* Actions per alert */}
-                  <div className="flex items-center justify-between pt-1 text-xs">
-                    <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center justify-between gap-2.5 pt-2 border-t border-slate-100 text-xs">
+                    <div className="flex flex-wrap items-center gap-2">
                       <button
                         onClick={() => handleGoToSection(alert)}
-                        className={`px-3 py-1.5 rounded-xl font-bold transition cursor-pointer flex items-center gap-1.5 ${
+                        className={`px-3 py-1.5 rounded-xl font-bold transition cursor-pointer flex items-center gap-1.5 text-xs ${
                           alert.type === 'mantenimiento'
                             ? 'bg-teal-500 hover:bg-teal-600 text-white shadow-xs'
                             : alert.type === 'seguro'
@@ -355,7 +360,7 @@ export const NotificationCenterModal: React.FC<NotificationCenterModalProps> = (
                             : 'bg-amber-500 hover:bg-amber-600 text-white shadow-xs'
                         }`}
                       >
-                        <ExternalLink className="w-3.5 h-3.5" />
+                        <ExternalLink className="w-3.5 h-3.5 shrink-0" />
                         <span>
                           {alert.type === 'mantenimiento'
                             ? '🛠️ Gestionar Servicio'
@@ -367,10 +372,10 @@ export const NotificationCenterModal: React.FC<NotificationCenterModalProps> = (
 
                       <button
                         onClick={() => handleShareAlert(alert)}
-                        className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold transition cursor-pointer flex items-center gap-1"
+                        className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold transition cursor-pointer flex items-center gap-1.5 text-xs shrink-0"
                         title="Enviar recordatorio por WhatsApp"
                       >
-                        <Send className="w-3.5 h-3.5 text-emerald-600" />
+                        <Send className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                         <span>Compartir</span>
                       </button>
                     </div>
@@ -378,9 +383,11 @@ export const NotificationCenterModal: React.FC<NotificationCenterModalProps> = (
                     {!alert.read && (
                       <button
                         onClick={() => markAlertAsRead(alert.id)}
-                        className="text-[11px] text-slate-400 hover:text-slate-700 font-semibold cursor-pointer"
+                        className="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 hover:border-slate-300 text-slate-600 hover:text-slate-900 font-medium text-xs transition cursor-pointer flex items-center gap-1.5 shrink-0 ml-auto sm:ml-0 shadow-2xs"
+                        title="Marcar como leída y descartar de pendientes"
                       >
-                        Descartar
+                        <X className="w-3.5 h-3.5 text-slate-400" />
+                        <span>Descartar</span>
                       </button>
                     )}
                   </div>

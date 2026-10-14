@@ -39,6 +39,9 @@ export const MobileNav: React.FC = () => {
   const handleSelectTab = (tabId: string) => {
     setCurrentTab(tabId);
     setShowDrawer(false);
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.body.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   };
 
   return (
@@ -134,7 +137,10 @@ export const MobileNav: React.FC = () => {
       {/* Persistent Bottom Bar */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-[#172554] border-t border-blue-900/80 px-2 py-2 flex items-center justify-around text-[10px] font-semibold text-blue-200 shadow-xl">
         <button
-          onClick={() => setCurrentTab('inicio')}
+          onClick={() => {
+            setCurrentTab('inicio');
+            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+          }}
           className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition cursor-pointer ${
             currentTab === 'inicio' ? 'text-white font-bold bg-[#2563EB]/40' : 'hover:text-white'
           }`}
@@ -144,7 +150,10 @@ export const MobileNav: React.FC = () => {
         </button>
 
         <button
-          onClick={() => setCurrentTab('flota')}
+          onClick={() => {
+            setCurrentTab('flota');
+            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+          }}
           className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition cursor-pointer ${
             currentTab === 'flota' ? 'text-white font-bold bg-[#2563EB]/40' : 'hover:text-white'
           }`}
@@ -154,7 +163,10 @@ export const MobileNav: React.FC = () => {
         </button>
 
         <button
-          onClick={() => setCurrentTab('conductores')}
+          onClick={() => {
+            setCurrentTab('conductores');
+            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+          }}
           className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition cursor-pointer ${
             currentTab === 'conductores'
               ? 'text-white font-bold bg-[#2563EB]/40'

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useGarage } from '../../context/GarageContext';
 import {
   Truck,
@@ -71,6 +71,12 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
   const [activeTab, setActiveTab] = useState<
     'mantenimiento' | 'gastos' | 'combustible' | 'documentos' | 'seguro' | 'siniestros' | 'recordatorios' | 'chofer'
   >('mantenimiento');
+
+  const contentBodyRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    contentBodyRef.current?.scrollTo({ top: 0, behavior: 'instant' });
+  }, [activeTab]);
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
@@ -362,7 +368,7 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
           </div>
 
           {/* Tab Content Body - Maximized height for maintenance & details */}
-          <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-5 md:p-6 bg-[#F3F6FA] space-y-4">
+          <div ref={contentBodyRef} className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-5 md:p-6 bg-[#F3F6FA] space-y-4">
             {/* TAB: MANTENIMIENTO */}
             {activeTab === 'mantenimiento' && (
               <div className="space-y-3.5">

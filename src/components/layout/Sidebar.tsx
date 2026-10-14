@@ -125,7 +125,10 @@ export const Sidebar: React.FC = () => {
           return (
             <button
               key={item.id}
-              onClick={() => setCurrentTab(item.id)}
+              onClick={() => {
+                setCurrentTab(item.id);
+                window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+              }}
               className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition cursor-pointer ${
                 isActive
                   ? 'bg-[#2563EB] text-white font-semibold shadow-md shadow-blue-950/40'

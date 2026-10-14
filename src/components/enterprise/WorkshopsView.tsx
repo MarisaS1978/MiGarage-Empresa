@@ -134,16 +134,28 @@ export const WorkshopsView: React.FC = () => {
       </div>
 
       {/* Search */}
-      <div className="relative">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          (document.activeElement as HTMLElement)?.blur();
+        }}
+        className="relative"
+      >
         <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
         <input
-          type="text"
+          type="search"
+          enterKeyHint="search"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              (e.target as HTMLInputElement).blur();
+            }
+          }}
           placeholder="Buscar taller por nombre, rubro o dirección..."
           className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-white border border-[#DCE3ED] text-sm text-slate-800 placeholder-slate-400 focus:outline-hidden focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
         />
-      </div>
+      </form>
 
       {/* Workshops Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

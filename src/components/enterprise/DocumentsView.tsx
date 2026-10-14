@@ -71,22 +71,37 @@ export const DocumentsView: React.FC = () => {
 
       {/* Search and Filters */}
       <div className="flex flex-col sm:flex-row items-center gap-3">
-        <div className="relative flex-1 w-full">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            (document.activeElement as HTMLElement)?.blur();
+          }}
+          className="relative flex-1 w-full"
+        >
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
-            type="text"
+            type="search"
+            enterKeyHint="search"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                (e.target as HTMLInputElement).blur();
+              }
+            }}
             placeholder="Buscar por vehículo, título u oblea..."
             className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-white border border-[#DCE3ED] text-sm text-slate-800 placeholder-slate-400 focus:outline-hidden focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
           />
-        </div>
+        </form>
 
         <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0 scrollbar-none">
           {['todos', 'seguro', 'comprobante', 'vtv', 'cédula'].map((type) => (
             <button
               key={type}
-              onClick={() => setFilterType(type)}
+              onClick={() => {
+                setFilterType(type);
+                window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+              }}
               className={`px-3 py-2 rounded-xl text-xs font-semibold capitalize transition cursor-pointer ${
                 filterType === type
                   ? 'bg-[#172554] text-white'

@@ -37,13 +37,13 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
           <X className="w-5 h-5" />
         </button>
 
-        <div className="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center mb-4">
+        <div className="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center mb-4 mx-auto">
           <AlertTriangle className="w-6 h-6" />
         </div>
 
-        <h3 className="text-lg font-bold text-slate-900">{title}</h3>
+        <h3 className="text-lg font-bold text-slate-900 text-center">{title}</h3>
 
-        <div className="mt-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+        <div className="mt-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-center">
           <div className="font-extrabold text-slate-900 text-sm">{itemName}</div>
           {itemSubtitle && (
             <div className="text-xs text-slate-500 font-mono mt-0.5">{itemSubtitle}</div>
@@ -51,7 +51,7 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
         </div>
 
         {warningDetails.length > 0 && (
-          <div className="mt-3 space-y-1.5 p-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs">
+          <div className="mt-3 space-y-1.5 p-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs text-left">
             <div className="font-bold flex items-center gap-1.5 text-amber-800">
               <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
               <span>Registros relacionados detectados:</span>
@@ -67,11 +67,11 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
           </div>
         )}
 
-        <p className="text-xs text-slate-500 mt-3">
+        <p className="text-xs text-slate-500 mt-3 text-center">
           ¿Estás seguro de que deseás continuar? Esta operación no se puede deshacer.
         </p>
 
-        <div className="flex items-center justify-end gap-2.5 mt-5 pt-3 border-t border-slate-100">
+        <div className="flex items-center justify-center gap-2.5 mt-5 pt-3 border-t border-slate-100">
           <button
             type="button"
             onClick={onClose}

@@ -182,7 +182,20 @@ const GarageContext = createContext<GarageContextType | undefined>(undefined);
 
 export const GarageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const mode: AppMode = 'enterprise';
-  const [currentTab, setCurrentTab] = useState<string>('inicio');
+  const [currentTab, setCurrentTabRaw] = useState<string>('inicio');
+
+  const setCurrentTab = (tab: string) => {
+    setCurrentTabRaw(tab);
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      document.documentElement.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      document.body.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      const mainEl = document.querySelector('main');
+      if (mainEl) {
+        mainEl.scrollTop = 0;
+      }
+    }
+  };
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
   const [shareInsuranceVehicleId, setShareInsuranceVehicleId] = useState<string | null>(null);
 

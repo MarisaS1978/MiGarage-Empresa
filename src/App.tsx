@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GarageProvider, useGarage } from './context/GarageContext';
 import { Header } from './components/layout/Header';
 import { Sidebar } from './components/layout/Sidebar';
@@ -42,6 +42,32 @@ const MainAppContent: React.FC = () => {
   const [quickActionType, setQuickActionType] = useState<
     'mantenimiento' | 'combustible' | 'recordatorio' | 'siniestro' | 'vehiculo' | null
   >(null);
+
+  // 1. Al presionar Enter en cualquier campo de texto/búsqueda, ocultar teclado móvil
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        const active = document.activeElement;
+        if (active instanceof HTMLInputElement) {
+          active.blur();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, []);
+
+  // 3. Al cambiar de pestaña o categoría en 'Más' y el resto de la app, resetear scroll al tope
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.body.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    const mainEl = document.querySelector('main');
+    if (mainEl) {
+      mainEl.scrollTop = 0;
+    }
+  }, [currentTab]);
 
   const handleOpenQuickAction = (
     type: 'mantenimiento' | 'combustible' | 'recordatorio' | 'siniestro' | 'vehiculo' = 'mantenimiento'
