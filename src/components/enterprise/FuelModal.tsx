@@ -60,7 +60,7 @@ export const FuelModal: React.FC<FuelModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (isEditing && !isOwner) {
-      showToast('Solo el administrador o propietario puede modificar cargas de combustible anteriores.', 'error');
+      showToast('Solo el administrador puede modificar cargas de combustible anteriores.', 'error');
       return;
     }
 

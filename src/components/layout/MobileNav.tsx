@@ -74,13 +74,13 @@ export const MobileNav: React.FC = () => {
                   onClick={() => {
                     setShowDrawer(false);
                     openOwnerLoginModal(
-                      'Ingresá tu contraseña de Propietario para desbloquear el panel completo.'
+                      'Ingresá tu contraseña de Administrador para desbloquear el panel completo.'
                     );
                   }}
                   className="w-full py-2.5 px-3.5 rounded-2xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-400/40 text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
                 >
                   <Lock className="w-4 h-4 text-amber-300" />
-                  <span>Ingresar como Propietario</span>
+                  <span>Ingresar a Modo Administrador</span>
                 </button>
               ) : (
                 <button
@@ -91,7 +91,7 @@ export const MobileNav: React.FC = () => {
                   className="w-full py-2 px-3.5 rounded-2xl bg-white/10 hover:bg-rose-500/30 text-rose-200 border border-rose-400/30 text-xs font-semibold transition flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <LogOut className="w-4 h-4 text-rose-300" />
-                  <span>Cerrar Sesión Propietario (Salir a Chofer)</span>
+                  <span>Cerrar Sesión Administrador (Salir a Chofer)</span>
                 </button>
               )}
             </div>

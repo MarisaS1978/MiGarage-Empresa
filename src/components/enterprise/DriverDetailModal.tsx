@@ -310,27 +310,27 @@ export const DriverDetailModal: React.FC<DriverDetailModalProps> = ({
                   {driverIncidents.map((inc) => (
                     <div
                       key={inc.id}
-                      className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs flex flex-col sm:flex-row sm:items-start justify-between gap-2.5 overflow-hidden"
+                      className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs flex flex-col sm:flex-row sm:items-start justify-between gap-3 w-full max-w-full overflow-hidden"
                     >
-                      <div className="min-w-0 flex-1 space-y-1">
+                      <div className="min-w-0 flex-1 space-y-1.5">
                         <div className="flex flex-wrap items-center gap-1.5 font-bold text-slate-900 leading-snug">
                           <span className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 uppercase font-bold text-[10px] shrink-0">
                             {inc.type}
                           </span>
                           <span className="text-slate-800 font-mono text-[11px] shrink-0">{inc.date}</span>
-                          <span className="text-slate-600 font-medium break-words">
+                          <span className="text-slate-600 font-medium [overflow-wrap:anywhere] break-words min-w-0">
                             · {inc.vehicleName}
                           </span>
                         </div>
                         {inc.description && (
-                          <div className="text-[11px] text-slate-600 leading-relaxed break-words whitespace-normal">
+                          <div className="text-[11px] text-slate-600 leading-relaxed [overflow-wrap:anywhere] break-words whitespace-normal">
                             {inc.description}
                           </div>
                         )}
                         {inc.location && (
                           <div className="text-[10px] text-slate-500 flex flex-wrap items-center gap-1 pt-0.5">
-                            <span className="text-slate-400">Lugar:</span>
-                            <span className="font-medium text-slate-700 break-words">{inc.location}</span>
+                            <span className="text-slate-400 shrink-0">Lugar:</span>
+                            <span className="font-medium text-slate-700 [overflow-wrap:anywhere] break-words">{inc.location}</span>
                           </div>
                         )}
                       </div>

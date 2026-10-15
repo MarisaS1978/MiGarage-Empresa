@@ -50,7 +50,7 @@ export const ReminderModal: React.FC<ReminderModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!isOwner) {
-      showToast('Solo el propietario puede registrar o editar recordatorios.', 'error');
+      showToast('Solo el administrador puede registrar o editar recordatorios.', 'error');
       return;
     }
 

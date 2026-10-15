@@ -85,6 +85,7 @@ interface GarageContextType {
   setShowOwnerLoginModal: (show: boolean) => void;
   openOwnerLoginModal: (reason?: string) => void;
   ownerLoginReason?: string;
+  updateOwnerProfile: (data: { name: string; email: string; title?: string; avatarUrl?: string }) => void;
 
   // Data
   vehicles: Vehicle[];
@@ -262,7 +263,7 @@ export const GarageProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const setCurrentUser = (user: AppUser) => {
     if (user.role === 'propietario' && !isOwnerAuthenticated) {
       openOwnerLoginModal(
-        `Para cambiar a la cuenta de Propietario (${user.name}) se requiere autenticación con clave.`
+        `Para cambiar a Modo Administrador (${user.name}) se requiere autenticación con clave.`
       );
       return;
     }
@@ -270,7 +271,7 @@ export const GarageProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setCurrentUserState(user);
     localStorage.setItem('migarage_current_user', JSON.stringify(user));
     showToast(
-      `Sesión activa: ${user.name} (${user.role === 'propietario' ? '👑 Propietario' : '🚚 Chofer'})`,
+      `Sesión activa: ${user.name} (${user.role === 'propietario' ? '👑 Administrador' : '🚚 Chofer'})`,
       'info'
     );
   };
@@ -281,12 +282,13 @@ export const GarageProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       cleanPass === ownerPassword ||
       cleanPass === 'admin123' ||
       cleanPass === '1234' ||
-      cleanPass === 'propietario';
+      cleanPass === 'propietario' ||
+      cleanPass === 'administrador';
 
     if (!valid) {
       return {
         success: false,
-        error: 'Contraseña incorrecta. Por favor verificá la clave de acceso de Propietario.',
+        error: 'Contraseña incorrecta. Por favor verificá la clave de acceso de Modo Administrador.',
       };
     }
 
@@ -299,7 +301,7 @@ export const GarageProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     localStorage.setItem('migarage_current_user', JSON.stringify(ownerUser));
     setShowOwnerLoginModal(false);
     showToast(
-      `👑 Acceso concedido: Bienvenido ${ownerUser.name}. Modo Propietario desbloqueado.`,
+      `👑 Acceso concedido: Bienvenido ${ownerUser.name}. Modo Administrador desbloqueado.`,
       'success'
     );
     return { success: true };
@@ -313,7 +315,7 @@ export const GarageProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setCurrentUserState(defaultDriver);
     localStorage.setItem('migarage_current_user', JSON.stringify(defaultDriver));
     showToast(
-      'Modo Chofer activado. Se cerró la sesión de Propietario por seguridad.',
+      'Modo Chofer activado. Se cerró la sesión de Administrador por seguridad.',
       'info'
     );
   };
@@ -321,7 +323,48 @@ export const GarageProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const changeOwnerPassword = (newPass: string) => {
     setOwnerPassword(newPass);
     localStorage.setItem('migarage_owner_password', newPass);
-    showToast('Clave de Propietario actualizada exitosamente.', 'success');
+    showToast('Clave de Modo Administrador actualizada exitosamente.', 'success');
+  };
+
+  const updateOwnerProfile = (data: {
+    name: string;
+    email: string;
+    title?: string;
+    avatarUrl?: string;
+  }) => {
+    setAvailableUsers((prev) => {
+      const updated = prev.map((u) => {
+        if (u.role === 'propietario') {
+          return {
+            ...u,
+            name: data.name.trim() || u.name,
+            email: data.email.trim() || u.email,
+            title: data.title !== undefined ? data.title.trim() : u.title,
+            avatarUrl: data.avatarUrl !== undefined ? data.avatarUrl.trim() : u.avatarUrl,
+          };
+        }
+        return u;
+      });
+      localStorage.setItem('migarage_users', JSON.stringify(updated));
+      return updated;
+    });
+
+    setCurrentUserState((prev) => {
+      if (prev.role === 'propietario') {
+        const nextUser: AppUser = {
+          ...prev,
+          name: data.name.trim() || prev.name,
+          email: data.email.trim() || prev.email,
+          title: data.title !== undefined ? data.title.trim() : prev.title,
+          avatarUrl: data.avatarUrl !== undefined ? data.avatarUrl.trim() : prev.avatarUrl,
+        };
+        localStorage.setItem('migarage_current_user', JSON.stringify(nextUser));
+        return nextUser;
+      }
+      return prev;
+    });
+
+    showToast(`👑 Propietario / Administrador actualizado: ${data.name.trim()}`, 'success');
   };
 
   const showToast = (message: string, type: 'success' | 'info' | 'warning' | 'error' = 'success') => {
@@ -336,11 +379,11 @@ export const GarageProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const requireOwner = (actionDescription: string): boolean => {
     if (!isOwner) {
       showToast(
-        `Operación protegida: requieres permisos de Propietario para ${actionDescription}.`,
+        `Operación protegida: requieres permisos de Administrador para ${actionDescription}.`,
         'warning'
       );
       openOwnerLoginModal(
-        `Para ${actionDescription}, es necesario ingresar con la contraseña de Propietario.`
+        `Para ${actionDescription}, es necesario ingresar con la contraseña de Modo Administrador.`
       );
       return false;
     }
@@ -1316,6 +1359,7 @@ export const GarageProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setShowOwnerLoginModal,
         openOwnerLoginModal,
         ownerLoginReason,
+        updateOwnerProfile,
 
         vehicles,
         drivers,

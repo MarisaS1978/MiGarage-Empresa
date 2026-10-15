@@ -62,7 +62,7 @@ export const InsuranceModal: React.FC<InsuranceModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!isOwner) {
-      showToast('Solo el propietario puede registrar o editar pólizas de seguro.', 'error');
+      showToast('Solo el administrador puede registrar o editar pólizas de seguro.', 'error');
       return;
     }
 

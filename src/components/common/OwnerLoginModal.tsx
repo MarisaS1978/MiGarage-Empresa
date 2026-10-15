@@ -11,7 +11,9 @@ import {
   KeyRound,
   ArrowRight,
   Truck,
+  Edit,
 } from 'lucide-react';
+import { EditOwnerModal } from './EditOwnerModal';
 
 interface OwnerLoginModalProps {
   isOpen: boolean;
@@ -25,7 +27,7 @@ export const OwnerLoginModal: React.FC<OwnerLoginModalProps> = ({
   isOpen,
   onClose,
   onSuccess,
-  title = 'Ingreso a Modo Propietario',
+  title = 'Ingreso a Modo Administrador',
   reason,
 }) => {
   const { loginAsOwner, availableUsers } = useGarage();
@@ -33,6 +35,7 @@ export const OwnerLoginModal: React.FC<OwnerLoginModalProps> = ({
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showEditOwner, setShowEditOwner] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const ownerUser =
@@ -58,7 +61,7 @@ export const OwnerLoginModal: React.FC<OwnerLoginModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!password.trim()) {
-      setErrorMessage('Por favor ingresá la clave de acceso de Propietario.');
+      setErrorMessage('Por favor ingresá la clave de acceso de Modo Administrador.');
       return;
     }
 
@@ -116,7 +119,7 @@ export const OwnerLoginModal: React.FC<OwnerLoginModalProps> = ({
 
           <p className="text-xs text-blue-200 mt-2.5 leading-relaxed">
             {reason ||
-              'Esta función requiere privilegios de administración. Ingresá la contraseña del propietario para desbloquear la gestión completa.'}
+              'Esta función requiere privilegios de administración. Ingresá la contraseña de administrador para desbloquear la gestión completa.'}
           </p>
         </div>
 
@@ -136,9 +139,20 @@ export const OwnerLoginModal: React.FC<OwnerLoginModalProps> = ({
             </div>
           </div>
 
-          <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-blue-100 text-[#172554] shrink-0">
-            Propietario
-          </span>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => setShowEditOwner(true)}
+              className="text-[11px] font-bold text-[#2563EB] hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded-lg border border-blue-200 transition cursor-pointer flex items-center gap-1"
+              title="Cambiar persona o datos del Administrador"
+            >
+              <Edit className="w-3 h-3" />
+              <span>Cambiar</span>
+            </button>
+            <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-blue-100 text-[#172554]">
+              Administrador
+            </span>
+          </div>
         </div>
 
         {/* Form Body */}
@@ -161,7 +175,7 @@ export const OwnerLoginModal: React.FC<OwnerLoginModalProps> = ({
 
           <div>
             <label className="block text-xs font-bold text-[#172554] mb-1.5 flex items-center justify-between">
-              <span>Clave de Acceso de Propietario</span>
+              <span>Clave de Acceso de Modo Administrador</span>
               <button
                 type="button"
                 onClick={handleUseDefaultPassword}
@@ -218,7 +232,7 @@ export const OwnerLoginModal: React.FC<OwnerLoginModalProps> = ({
               className="w-full py-2.5 px-4 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-bold text-xs sm:text-sm cursor-pointer transition shadow-md shadow-blue-600/30 flex items-center justify-center gap-2 disabled:opacity-50"
             >
               <CheckCircle2 className="w-4 h-4" />
-              <span>{isSubmitting ? 'Verificando...' : 'Ingresar como Propietario'}</span>
+              <span>{isSubmitting ? 'Verificando...' : 'Ingresar a Modo Administrador'}</span>
             </button>
 
             <button
@@ -232,6 +246,13 @@ export const OwnerLoginModal: React.FC<OwnerLoginModalProps> = ({
           </div>
         </form>
       </div>
+
+      {showEditOwner && (
+        <EditOwnerModal
+          isOpen={showEditOwner}
+          onClose={() => setShowEditOwner(false)}
+        />
+      )}
     </div>
   );
 };

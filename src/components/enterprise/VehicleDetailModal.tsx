@@ -991,7 +991,7 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
                     className="px-3.5 py-1.5 rounded-xl bg-[#172554] hover:bg-blue-950 text-white font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs shrink-0"
                   >
                     <Shield className="w-3.5 h-3.5 text-blue-300" />
-                    <span>Compartir Seguro 🛡️</span>
+                    <span>Compartir Seguro</span>
                   </button>
                 </div>
 

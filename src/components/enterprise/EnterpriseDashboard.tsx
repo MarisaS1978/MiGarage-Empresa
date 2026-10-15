@@ -219,7 +219,7 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
               onClick={() => {
                 if (!isOwner) {
                   openOwnerLoginModal(
-                    'Para acceder a la vista ejecutiva de Flota General se requiere autenticarse como Propietario.'
+                    'Para acceder a la vista ejecutiva de Flota General se requiere autenticarse en Modo Administrador.'
                   );
                   return;
                 }
@@ -230,7 +230,7 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
                   ? 'bg-[#172554] text-white shadow-xs'
                   : 'text-[#64748B] hover:text-[#172554]'
               }`}
-              title={!isOwner ? 'Requiere clave de Propietario' : 'Vista de Flota General'}
+              title={!isOwner ? 'Requiere clave de Modo Administrador' : 'Vista de Flota General'}
             >
               <Truck className="w-3.5 h-3.5 shrink-0" />
               <span>Flota General</span>
@@ -994,7 +994,7 @@ export const EnterpriseDashboard: React.FC<EnterpriseDashboardProps> = ({
                         title="Compartir datos de seguro y auxilio mecánico en caso de siniestro"
                       >
                         <Shield className="w-3.5 h-3.5 text-blue-600" />
-                        <span>Compartir Seguro 🛡️</span>
+                        <span>Compartir Seguro</span>
                       </button>
                     </div>
 

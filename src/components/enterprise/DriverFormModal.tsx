@@ -56,7 +56,7 @@ export const DriverFormModal: React.FC<DriverFormModalProps> = ({ onClose, drive
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!isOwner) {
-      showToast('Solo el propietario puede registrar o modificar conductores.', 'error');
+      showToast('Solo el administrador puede registrar o modificar conductores.', 'error');
       return;
     }
 

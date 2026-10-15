@@ -62,22 +62,22 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuickAction, onOpenNotific
               <button
                 onClick={() =>
                   openOwnerLoginModal(
-                    'Ingresá tu contraseña de Propietario para desbloquear el control total de flota.'
+                    'Ingresá tu contraseña de Administrador para desbloquear el control total de flota.'
                   )
                 }
                 className="flex items-center justify-center gap-1 p-1.5 sm:px-3 sm:py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-400/40 text-xs font-bold transition cursor-pointer shadow-xs shrink-0"
-                title="Ingresar a Modo Propietario con clave"
-                aria-label="Ingresar como Propietario"
+                title="Ingresar a Modo Administrador con clave"
+                aria-label="Ingresar a Modo Administrador"
               >
                 <Lock className="w-4 h-4 text-amber-300" />
-                <span className="hidden sm:inline">Modo Propietario</span>
+                <span className="hidden sm:inline">Modo Administrador</span>
               </button>
             ) : (
               <button
                 onClick={logoutOwner}
                 className="flex items-center justify-center gap-1 p-1.5 sm:px-3 sm:py-1.5 rounded-xl bg-white/10 hover:bg-rose-500/30 text-rose-200 border border-rose-400/30 text-xs font-semibold transition cursor-pointer shrink-0"
-                title="Cerrar sesión de propietario y volver a Modo Chofer por seguridad"
-                aria-label="Cerrar sesión de Propietario"
+                title="Cerrar sesión de Administrador y volver a Modo Chofer por seguridad"
+                aria-label="Cerrar sesión de Administrador"
               >
                 <LogOut className="w-4 h-4 text-rose-300" />
                 <span className="hidden sm:inline">Salir a Chofer</span>
@@ -99,7 +99,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuickAction, onOpenNotific
                   {currentUser.name}
                 </div>
                 <div className="text-[10px] text-blue-200 uppercase tracking-wider font-extrabold -mt-0.5">
-                  {currentUser.role}
+                  {currentUser.role === 'propietario' ? 'ADMINISTRADOR' : 'CHOFER'}
                 </div>
               </div>
               <ChevronDown className="w-3.5 h-3.5 opacity-70 hidden sm:block" />

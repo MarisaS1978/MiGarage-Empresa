@@ -120,7 +120,7 @@ export const IncidentModal: React.FC<IncidentModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (isEditing && !isOwner) {
-      showToast('Solo el administrador o propietario puede modificar siniestros registrados.', 'error');
+      showToast('Solo el administrador puede modificar siniestros registrados.', 'error');
       return;
     }
 

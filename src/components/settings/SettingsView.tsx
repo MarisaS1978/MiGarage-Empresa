@@ -13,13 +13,16 @@ import {
   Truck,
   KeyRound,
   LogOut,
+  Edit,
 } from 'lucide-react';
 import { UserSwitcherModal } from '../common/UserSwitcherModal';
 import { ConfirmDeleteModal } from '../common/ConfirmDeleteModal';
+import { EditOwnerModal } from '../common/EditOwnerModal';
 
 export const SettingsView: React.FC = () => {
   const {
     currentUser,
+    availableUsers,
     isOwner,
     vehicles,
     drivers,
@@ -38,9 +41,19 @@ export const SettingsView: React.FC = () => {
   } = useGarage();
 
   const [showUserModal, setShowUserModal] = useState(false);
+  const [showEditOwnerModal, setShowEditOwnerModal] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [isChangingPass, setIsChangingPass] = useState(false);
+
+  const adminUser =
+    availableUsers.find((u) => u.role === 'propietario') || {
+      name: 'Ing. Roberto Méndez',
+      email: 'roberto.mendez@transporte-sa.com',
+      title: 'Gerente General de Flota',
+      avatarUrl:
+        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=200&q=80',
+    };
 
   const handleUpdatePassword = (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,7 +121,7 @@ export const SettingsView: React.FC = () => {
                   isOwner ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'
                 }`}
               >
-                {isOwner ? '👑 Propietario' : '🚚 Chofer'}
+                {isOwner ? '👑 Administrador' : '🚚 Chofer'}
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-0.5">{currentUser.title || currentUser.email}</p>
@@ -119,13 +132,13 @@ export const SettingsView: React.FC = () => {
               <button
                 onClick={() =>
                   openOwnerLoginModal(
-                    'Ingresá tu clave de Propietario para desbloquear la gestión completa.'
+                    'Ingresá tu clave de Administrador para desbloquear la gestión completa.'
                   )
                 }
                 className="px-3.5 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-900 border border-amber-300 text-xs font-bold shadow-xs cursor-pointer flex items-center gap-1.5 transition"
               >
                 <Lock className="w-3.5 h-3.5 text-amber-700" />
-                <span>Ingresar como Propietario</span>
+                <span>Ingresar a Modo Administrador</span>
               </button>
             ) : (
               <button
@@ -156,7 +169,7 @@ export const SettingsView: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
             <div className="p-4 rounded-2xl bg-[#F3F6FA] border border-[#DCE3ED] space-y-2">
               <div className="font-bold text-[#172554] flex items-center gap-1.5">
-                <span>👑 Rol Propietario</span>
+                <span>👑 Rol Administrador (Modo Administrador)</span>
                 <span className="text-[10px] text-emerald-700 bg-emerald-100 px-2 py-0.2 rounded font-bold">
                   Acceso Total
                 </span>
@@ -202,13 +215,68 @@ export const SettingsView: React.FC = () => {
         </div>
       </div>
 
+      {/* Administrator Profile Card */}
+      <div className="bg-white rounded-3xl p-6 border border-[#DCE3ED] shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+          <div>
+            <div className="text-xs font-semibold text-[#64748B] flex items-center gap-1.5">
+              <Shield className="w-3.5 h-3.5 text-[#2563EB]" />
+              <span>Titular y Responsable — Modo Administrador</span>
+            </div>
+            <div className="flex items-center gap-3 mt-2">
+              <img
+                src={
+                  adminUser.avatarUrl ||
+                  'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=200&q=80'
+                }
+                alt={adminUser.name}
+                className="w-12 h-12 rounded-2xl object-cover border-2 border-amber-300 shrink-0"
+              />
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-base font-extrabold text-[#172554]">{adminUser.name}</h3>
+                  <span className="text-[10px] font-extrabold bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded-full uppercase">
+                    👑 Administrador
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 mt-0.5">{adminUser.title || adminUser.email}</p>
+                <p className="text-[11px] text-[#2563EB] font-medium">{adminUser.email}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                if (!isOwner) {
+                  openOwnerLoginModal(
+                    'Ingresá en Modo Administrador para modificar los datos del titular de flota.'
+                  );
+                  return;
+                }
+                setShowEditOwnerModal(true);
+              }}
+              className="px-4 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold transition cursor-pointer flex items-center gap-1.5 shadow-xs"
+            >
+              <Edit className="w-3.5 h-3.5 text-amber-700" />
+              <span>Cambiar Propietario / Administrador</span>
+            </button>
+          </div>
+        </div>
+
+        <p className="text-xs text-slate-600">
+          Esta persona posee la autoridad máxima sobre la flota (registro de vehículos, choferes, talleres, contratos y pólizas de seguros). Podés modificar su nombre, email, cargo o asignar a otro miembro en cualquier momento.
+        </p>
+      </div>
+
       {/* Security & Owner Password Configuration */}
       <div className="bg-white rounded-3xl p-6 border border-[#DCE3ED] shadow-xs space-y-4">
         <div>
           <div className="flex items-center gap-2">
             <KeyRound className="w-4 h-4 text-[#2563EB]" />
             <h2 className="text-base font-bold text-[#172554]">
-              Seguridad y Clave de Acceso de Propietario
+              Seguridad y Clave de Acceso de Modo Administrador
             </h2>
           </div>
           <p className="text-xs text-[#64748B] mt-0.5">
@@ -222,7 +290,7 @@ export const SettingsView: React.FC = () => {
             <span>Política de Inicio en Modo Chofer (Activa)</span>
           </div>
           <p className="text-blue-800 leading-relaxed text-[11px]">
-            Para evitar modificaciones no deseadas en vehículos, gastos y contratos, la aplicación se inicia por defecto en <strong>Modo Chofer</strong>. Para acceder a la administración general, el usuario debe ingresar la clave de Propietario.
+            Para evitar modificaciones no deseadas en vehículos, gastos y contratos, la aplicación se inicia por defecto en <strong>Modo Chofer</strong>. Para acceder a la administración general, el usuario debe ingresar la clave de Modo Administrador.
           </p>
         </div>
 
@@ -250,7 +318,7 @@ export const SettingsView: React.FC = () => {
             ) : (
               <form onSubmit={handleUpdatePassword} className="p-4 rounded-2xl bg-[#F3F6FA] border border-[#DCE3ED] space-y-3">
                 <div className="font-bold text-xs text-slate-800">
-                  Definir Nueva Clave de Propietario
+                  Definir Nueva Clave de Modo Administrador
                 </div>
                 <div className="flex flex-col sm:flex-row gap-2.5">
                   <input
@@ -286,10 +354,10 @@ export const SettingsView: React.FC = () => {
         ) : (
           <div className="p-3.5 rounded-2xl bg-[#F3F6FA] border border-[#DCE3ED] flex items-center justify-between gap-3 text-xs">
             <span className="text-slate-600">
-              Estás en <strong>Modo Chofer</strong>. Para modificar la clave de administración, primero debés ingresar como Propietario.
+              Estás en <strong>Modo Chofer</strong>. Para modificar la clave de administración, primero debés ingresar en Modo Administrador.
             </span>
             <button
-              onClick={() => openOwnerLoginModal('Ingresá como Propietario para gestionar la seguridad.')}
+              onClick={() => openOwnerLoginModal('Ingresá en Modo Administrador para gestionar la seguridad.')}
               className="px-3 py-1.5 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white text-xs font-bold cursor-pointer shrink-0 transition"
             >
               Iniciar Sesión
@@ -427,6 +495,14 @@ export const SettingsView: React.FC = () => {
             'Se preservará la persistencia en tu navegador.',
           ]}
           confirmButtonText="Sí, restaurar datos"
+        />
+      )}
+
+      {/* Edit Owner / Administrator Modal */}
+      {showEditOwnerModal && (
+        <EditOwnerModal
+          isOpen={showEditOwnerModal}
+          onClose={() => setShowEditOwnerModal(false)}
         />
       )}
     </div>

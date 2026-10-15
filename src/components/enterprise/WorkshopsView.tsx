@@ -44,7 +44,7 @@ export const WorkshopsView: React.FC = () => {
 
   const handleOpenAdd = () => {
     if (!isOwner) {
-      showToast('Solo el propietario puede agregar talleres o proveedores.', 'error');
+      showToast('Solo el administrador puede agregar talleres o proveedores.', 'error');
       return;
     }
     setWorkshopToEdit(null);
@@ -60,7 +60,7 @@ export const WorkshopsView: React.FC = () => {
 
   const handleOpenEdit = (ws: Workshop) => {
     if (!isOwner) {
-      showToast('Solo el propietario puede modificar talleres o proveedores.', 'error');
+      showToast('Solo el administrador puede modificar talleres o proveedores.', 'error');
       return;
     }
     setWorkshopToEdit(ws);

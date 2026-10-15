@@ -88,7 +88,7 @@ export const Sidebar: React.FC = () => {
               : 'bg-blue-500/20 text-blue-200 border border-blue-400/40'
           }`}
         >
-          {isOwner ? '👑 Propietario' : '🚚 Chofer'}
+          {isOwner ? '👑 Administrador' : '🚚 Chofer'}
         </span>
       </div>
 
@@ -97,14 +97,14 @@ export const Sidebar: React.FC = () => {
         <button
           onClick={() =>
             openOwnerLoginModal(
-              'Ingresá la contraseña para acceder a las funciones avanzadas de Propietario.'
+              'Ingresá la contraseña para acceder a las funciones avanzadas de Modo Administrador.'
             )
           }
           className="w-full mb-3 px-3 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-400/30 text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
-          title="Desbloquear Modo Propietario con clave"
+          title="Desbloquear Modo Administrador con clave"
         >
           <Lock className="w-3.5 h-3.5 text-amber-300" />
-          <span>Ingresar como Propietario</span>
+          <span>Ingresar como Administrador</span>
         </button>
       ) : (
         <button

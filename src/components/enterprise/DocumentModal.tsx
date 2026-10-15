@@ -42,7 +42,7 @@ export const DocumentModal: React.FC<DocumentModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!isOwner) {
-      showToast('Solo el propietario puede registrar o editar documentos.', 'error');
+      showToast('Solo el administrador puede registrar o editar documentos.', 'error');
       return;
     }
 

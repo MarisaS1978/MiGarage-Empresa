@@ -95,7 +95,7 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({ onClose, veh
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!isOwner) {
-      showToast('Solo el propietario puede registrar o modificar la ficha del vehículo.', 'error');
+      showToast('Solo el administrador puede registrar o modificar la ficha del vehículo.', 'error');
       return;
     }
 
@@ -194,14 +194,14 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({ onClose, veh
             <div className="flex items-center gap-2 min-w-0">
               <Lock className="w-4 h-4 text-amber-600 shrink-0" />
               <span className="text-xs font-semibold truncate">
-                Para guardar cambios o subir fotos, necesitás ingresar en Modo Propietario.
+                Para guardar cambios o subir fotos, necesitás ingresar en Modo Administrador.
               </span>
             </div>
             <button
               type="button"
               onClick={() => {
                 onClose();
-                openOwnerLoginModal('Ingresá tu clave de Propietario para editar la flota.');
+                openOwnerLoginModal('Ingresá tu clave de Administrador para editar la flota.');
               }}
               className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold shrink-0 cursor-pointer shadow-xs"
             >

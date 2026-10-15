@@ -65,7 +65,7 @@ export const MaintenanceFormModal: React.FC<MaintenanceFormModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!isOwner) {
-      showToast('Solo el propietario puede registrar o editar mantenimientos.', 'error');
+      showToast('Solo el administrador puede registrar o editar mantenimientos.', 'error');
       return;
     }
 
