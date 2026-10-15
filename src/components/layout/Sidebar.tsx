@@ -17,6 +17,7 @@ import {
   Lock,
   LogOut,
 } from 'lucide-react';
+import { PWAInstallButton } from '../pwa/PWAInstallButton';
 
 export const Sidebar: React.FC = () => {
   const {
@@ -116,6 +117,9 @@ export const Sidebar: React.FC = () => {
           <span>Salir a Modo Chofer</span>
         </button>
       )}
+
+      {/* PWA Direct Shortcut Install Button */}
+      <PWAInstallButton variant="sidebar" className="mb-3" />
 
       {/* Navigation List */}
       <nav className="space-y-1 flex-1">

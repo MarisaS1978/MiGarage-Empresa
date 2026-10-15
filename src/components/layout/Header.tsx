@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { UserSwitcherModal } from '../common/UserSwitcherModal';
 import { ConfirmDeleteModal } from '../common/ConfirmDeleteModal';
+import { PWAInstallButton } from '../pwa/PWAInstallButton';
 
 interface HeaderProps {
   onOpenQuickAction: () => void;
@@ -57,6 +58,9 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuickAction, onOpenNotific
 
           {/* Center / Right controls */}
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            {/* PWA Direct Shortcut Install Button */}
+            <PWAInstallButton variant="header" />
+
             {/* Owner Login / Logout Button */}
             {!isOwner ? (
               <button

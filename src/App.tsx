@@ -10,6 +10,7 @@ import { QuickLogModal } from './components/common/QuickLogModal';
 import { NotificationCenterModal } from './components/notifications/NotificationCenterModal';
 import { OwnerLoginModal } from './components/common/OwnerLoginModal';
 import { ShareInsuranceModal } from './components/enterprise/ShareInsuranceModal';
+import { OfflineIndicator } from './components/pwa/OfflineIndicator';
 
 // Enterprise Views
 import { EnterpriseDashboard } from './components/enterprise/EnterpriseDashboard';
@@ -207,6 +208,8 @@ const MainAppContent: React.FC = () => {
           }}
         />
       )}
+      {/* Offline Connectivity Notification */}
+      <OfflineIndicator />
     </div>
   );
 };

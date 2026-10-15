@@ -14,10 +14,12 @@ import {
   KeyRound,
   LogOut,
   Edit,
+  Smartphone,
 } from 'lucide-react';
 import { UserSwitcherModal } from '../common/UserSwitcherModal';
 import { ConfirmDeleteModal } from '../common/ConfirmDeleteModal';
 import { EditOwnerModal } from '../common/EditOwnerModal';
+import { PWAInstallButton } from '../pwa/PWAInstallButton';
 
 export const SettingsView: React.FC = () => {
   const {
@@ -440,6 +442,62 @@ export const SettingsView: React.FC = () => {
           >
             Emitir Alerta de Prueba
           </button>
+        </div>
+      </div>
+
+      {/* PWA & Mobile Home Screen Installation Card */}
+      <div className="bg-white rounded-3xl p-6 border border-[#DCE3ED] shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-4">
+            <div className="w-16 h-16 rounded-2xl bg-[#0f172a] p-1.5 border border-blue-500/30 shadow-md shrink-0 flex items-center justify-center">
+              <img
+                src="/pwa-192x192.png"
+                alt="Icono MiGarage"
+                className="w-full h-full rounded-xl object-contain shadow-xs"
+              />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200">
+                  Icono en Celular & PWA
+                </span>
+                <span className="text-[10px] text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full font-bold">
+                  Acceso Rápido
+                </span>
+              </div>
+              <h2 className="text-base font-bold text-[#172554] mt-1">
+                Acceso Directo e Instalación en Celular
+              </h2>
+              <p className="text-xs text-[#64748B] mt-0.5 leading-relaxed">
+                Guardá el icono oficial de <strong>MiGarage</strong> en la pantalla de inicio de tu teléfono (Android, iPhone o tablet) para ingresar como una aplicación nativa sin barra de direcciones.
+              </p>
+            </div>
+          </div>
+
+          <div className="shrink-0 self-start sm:self-center">
+            <PWAInstallButton variant="full" />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs">
+          <div className="p-3 rounded-2xl bg-[#F8FAFC] border border-slate-200/80">
+            <span className="font-bold text-slate-800 block">📱 Icono HD en Pantalla</span>
+            <span className="text-[11px] text-slate-500 mt-0.5 block leading-tight">
+              Icono adaptativo de alta resolución (192px y 512px) optimizado para Android e iOS.
+            </span>
+          </div>
+          <div className="p-3 rounded-2xl bg-[#F8FAFC] border border-slate-200/80">
+            <span className="font-bold text-slate-800 block">⚡ Modo Standalone</span>
+            <span className="text-[11px] text-slate-500 mt-0.5 block leading-tight">
+              Apertura a pantalla completa sin elementos de navegador, fluida y con carga instantánea.
+            </span>
+          </div>
+          <div className="p-3 rounded-2xl bg-[#F8FAFC] border border-slate-200/80">
+            <span className="font-bold text-slate-800 block">💾 Respaldo Local</span>
+            <span className="text-[11px] text-slate-500 mt-0.5 block leading-tight">
+              Funciona con datos en caché para consultas en ruta o zonas con baja cobertura celular.
+            </span>
+          </div>
         </div>
       </div>
 

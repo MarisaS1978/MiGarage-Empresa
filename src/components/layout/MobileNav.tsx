@@ -18,6 +18,7 @@ import {
   Lock,
   LogOut,
 } from 'lucide-react';
+import { PWAInstallButton } from '../pwa/PWAInstallButton';
 
 export const MobileNav: React.FC = () => {
   const {
@@ -94,6 +95,11 @@ export const MobileNav: React.FC = () => {
                   <span>Cerrar Sesión Administrador (Salir a Chofer)</span>
                 </button>
               )}
+            </div>
+
+            {/* PWA Mobile Shortcut Install */}
+            <div className="mb-4">
+              <PWAInstallButton variant="mobile" />
             </div>
 
             <div className="grid grid-cols-2 gap-2.5">
