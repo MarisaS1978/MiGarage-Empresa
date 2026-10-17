@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useGarage } from '../../context/GarageContext';
 import {
   Settings,
@@ -15,11 +15,14 @@ import {
   LogOut,
   Edit,
   Smartphone,
+  Camera,
+  Upload,
 } from 'lucide-react';
 import { UserSwitcherModal } from '../common/UserSwitcherModal';
 import { ConfirmDeleteModal } from '../common/ConfirmDeleteModal';
 import { EditOwnerModal } from '../common/EditOwnerModal';
 import { PWAInstallButton } from '../pwa/PWAInstallButton';
+import { compressImageFile } from '../../utils/imageCompressor';
 
 export const SettingsView: React.FC = () => {
   const {
@@ -40,6 +43,7 @@ export const SettingsView: React.FC = () => {
     openOwnerLoginModal,
     logoutOwner,
     changeOwnerPassword,
+    updateOwnerProfile,
   } = useGarage();
 
   const [showUserModal, setShowUserModal] = useState(false);
@@ -47,6 +51,31 @@ export const SettingsView: React.FC = () => {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [isChangingPass, setIsChangingPass] = useState(false);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+
+  const handleDirectPhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      showToast('Por favor seleccioná un archivo de imagen válido (JPG, PNG, WEBP).', 'error');
+      return;
+    }
+
+    try {
+      setIsUploadingPhoto(true);
+      const compressedDataUrl = await compressImageFile(file, 400, 400, 0.88);
+      updateOwnerProfile({ avatarUrl: compressedDataUrl });
+    } catch (err: unknown) {
+      console.error('Error al procesar foto del administrador:', err);
+      const msg = err instanceof Error ? err.message : 'Error al procesar la imagen.';
+      showToast(msg, 'error');
+    } finally {
+      setIsUploadingPhoto(false);
+      e.target.value = '';
+    }
+  };
 
   const adminUser =
     availableUsers.find((u) => u.role === 'propietario') || {
@@ -219,21 +248,50 @@ export const SettingsView: React.FC = () => {
 
       {/* Administrator Profile Card */}
       <div className="bg-white rounded-3xl p-6 border border-[#DCE3ED] shadow-xs space-y-4">
+        <input
+          ref={photoInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleDirectPhotoUpload}
+          className="hidden"
+        />
+
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
           <div>
             <div className="text-xs font-semibold text-[#64748B] flex items-center gap-1.5">
               <Shield className="w-3.5 h-3.5 text-[#2563EB]" />
               <span>Titular y Responsable — Modo Administrador</span>
             </div>
-            <div className="flex items-center gap-3 mt-2">
-              <img
-                src={
-                  adminUser.avatarUrl ||
-                  'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=200&q=80'
-                }
-                alt={adminUser.name}
-                className="w-12 h-12 rounded-2xl object-cover border-2 border-amber-300 shrink-0"
-              />
+            <div className="flex items-center gap-3.5 mt-2">
+              <div className="relative group shrink-0">
+                <img
+                  src={
+                    adminUser.avatarUrl ||
+                    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=200&q=80'
+                  }
+                  alt={adminUser.name}
+                  className="w-14 h-14 rounded-2xl object-cover border-2 border-amber-300 shadow-xs"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!isOwner) {
+                      openOwnerLoginModal(
+                        'Ingresá en Modo Administrador para cambiar la foto del titular.'
+                      );
+                      return;
+                    }
+                    photoInputRef.current?.click();
+                  }}
+                  disabled={isUploadingPhoto}
+                  className="absolute inset-0 bg-slate-900/60 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white cursor-pointer"
+                  title="Subir o cambiar foto"
+                >
+                  <Camera className="w-4 h-4 mb-0.5" />
+                  <span className="text-[9px] font-bold">Cambiar</span>
+                </button>
+              </div>
+
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="text-base font-extrabold text-[#172554]">{adminUser.name}</h3>
@@ -247,7 +305,26 @@ export const SettingsView: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                if (!isOwner) {
+                  openOwnerLoginModal(
+                    'Ingresá en Modo Administrador para subir la foto del titular.'
+                  );
+                  return;
+                }
+                photoInputRef.current?.click();
+              }}
+              disabled={isUploadingPhoto}
+              className="px-3.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-[#2563EB] border border-blue-200 text-xs font-bold transition cursor-pointer flex items-center gap-1.5 shadow-xs"
+              title="Subir o actualizar foto del administrador desde este dispositivo"
+            >
+              <Upload className="w-3.5 h-3.5" />
+              <span>{isUploadingPhoto ? 'Cargando...' : 'Subir Foto'}</span>
+            </button>
+
             <button
               type="button"
               onClick={() => {
@@ -262,7 +339,7 @@ export const SettingsView: React.FC = () => {
               className="px-4 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold transition cursor-pointer flex items-center gap-1.5 shadow-xs"
             >
               <Edit className="w-3.5 h-3.5 text-amber-700" />
-              <span>Cambiar Propietario / Administrador</span>
+              <span>Editar Datos</span>
             </button>
           </div>
         </div>

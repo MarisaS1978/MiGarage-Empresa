@@ -95,8 +95,18 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuickAction, onOpenNotific
               title="Cambiar usuario o rol de acceso"
               aria-label="Cambiar usuario activo"
             >
-              <div className="w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold bg-white/20 shrink-0">
-                {isOwner ? '👑' : '🚚'}
+              <div className="w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold bg-white/20 shrink-0 overflow-hidden">
+                {currentUser.avatarUrl ? (
+                  <img
+                    src={currentUser.avatarUrl}
+                    alt={currentUser.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : isOwner ? (
+                  '👑'
+                ) : (
+                  '🚚'
+                )}
               </div>
               <div className="text-left hidden sm:block">
                 <div className="text-xs font-bold text-white truncate max-w-[100px]">

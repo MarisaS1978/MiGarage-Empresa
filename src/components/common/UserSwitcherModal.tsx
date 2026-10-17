@@ -91,15 +91,27 @@ export const UserSwitcherModal: React.FC<UserSwitcherModalProps> = ({
                   onClick={() => handleSelectUser(user)}
                   className="flex items-center gap-3 min-w-0 flex-1 text-left cursor-pointer"
                 >
-                  <div
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 ${
-                      isUserOwner
-                        ? 'bg-amber-100 text-amber-900 border border-amber-300'
-                        : 'bg-blue-100 text-blue-900 border border-blue-300'
-                    }`}
-                  >
-                    {isUserOwner ? '👑' : '🚚'}
-                  </div>
+                  {user.avatarUrl ? (
+                    <img
+                      src={user.avatarUrl}
+                      alt={user.name}
+                      className={`w-10 h-10 rounded-xl object-cover shrink-0 ${
+                        isUserOwner
+                          ? 'border border-amber-300'
+                          : 'border border-blue-300'
+                      }`}
+                    />
+                  ) : (
+                    <div
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 ${
+                        isUserOwner
+                          ? 'bg-amber-100 text-amber-900 border border-amber-300'
+                          : 'bg-blue-100 text-blue-900 border border-blue-300'
+                      }`}
+                    >
+                      {isUserOwner ? '👑' : '🚚'}
+                    </div>
+                  )}
 
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-1.5">

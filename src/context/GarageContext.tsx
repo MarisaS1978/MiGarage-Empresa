@@ -85,7 +85,7 @@ interface GarageContextType {
   setShowOwnerLoginModal: (show: boolean) => void;
   openOwnerLoginModal: (reason?: string) => void;
   ownerLoginReason?: string;
-  updateOwnerProfile: (data: { name: string; email: string; title?: string; avatarUrl?: string }) => void;
+  updateOwnerProfile: (data: { name?: string; email?: string; title?: string; avatarUrl?: string }) => void;
 
   // Data
   vehicles: Vehicle[];
@@ -327,8 +327,8 @@ export const GarageProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const updateOwnerProfile = (data: {
-    name: string;
-    email: string;
+    name?: string;
+    email?: string;
     title?: string;
     avatarUrl?: string;
   }) => {
@@ -337,8 +337,8 @@ export const GarageProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         if (u.role === 'propietario') {
           return {
             ...u,
-            name: data.name.trim() || u.name,
-            email: data.email.trim() || u.email,
+            name: data.name !== undefined && data.name.trim() ? data.name.trim() : u.name,
+            email: data.email !== undefined && data.email.trim() ? data.email.trim() : u.email,
             title: data.title !== undefined ? data.title.trim() : u.title,
             avatarUrl: data.avatarUrl !== undefined ? data.avatarUrl.trim() : u.avatarUrl,
           };
@@ -353,8 +353,8 @@ export const GarageProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       if (prev.role === 'propietario') {
         const nextUser: AppUser = {
           ...prev,
-          name: data.name.trim() || prev.name,
-          email: data.email.trim() || prev.email,
+          name: data.name !== undefined && data.name.trim() ? data.name.trim() : prev.name,
+          email: data.email !== undefined && data.email.trim() ? data.email.trim() : prev.email,
           title: data.title !== undefined ? data.title.trim() : prev.title,
           avatarUrl: data.avatarUrl !== undefined ? data.avatarUrl.trim() : prev.avatarUrl,
         };
@@ -364,7 +364,11 @@ export const GarageProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       return prev;
     });
 
-    showToast(`👑 Propietario / Administrador actualizado: ${data.name.trim()}`, 'success');
+    if (data.name && data.name.trim()) {
+      showToast(`👑 Administrador actualizado: ${data.name.trim()}`, 'success');
+    } else {
+      showToast('👑 Perfil y foto del Administrador actualizados.', 'success');
+    }
   };
 
   const showToast = (message: string, type: 'success' | 'info' | 'warning' | 'error' = 'success') => {

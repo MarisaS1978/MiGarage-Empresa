@@ -43,6 +43,8 @@ export const OwnerLoginModal: React.FC<OwnerLoginModalProps> = ({
       name: 'Ing. Roberto Méndez',
       email: 'roberto.mendez@transporte-sa.com',
       title: 'Gerente General de Flota',
+      avatarUrl:
+        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=200&q=80',
     };
 
   useEffect(() => {
@@ -126,9 +128,17 @@ export const OwnerLoginModal: React.FC<OwnerLoginModalProps> = ({
         {/* User Account Info Bar */}
         <div className="bg-[#F8FAFC] px-5 sm:px-6 py-3 border-b border-slate-200/80 flex items-center justify-between text-xs">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-full bg-amber-100 text-amber-900 border border-amber-300 font-bold flex items-center justify-center text-xs shrink-0">
-              👑
-            </div>
+            {ownerUser.avatarUrl ? (
+              <img
+                src={ownerUser.avatarUrl}
+                alt={ownerUser.name}
+                className="w-8 h-8 rounded-full object-cover border border-amber-400 shrink-0 shadow-xs"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-amber-100 text-amber-900 border border-amber-300 font-bold flex items-center justify-center text-xs shrink-0">
+                👑
+              </div>
+            )}
             <div className="min-w-0 truncate">
               <span className="font-extrabold text-[#172554] block truncate">
                 {ownerUser.name}

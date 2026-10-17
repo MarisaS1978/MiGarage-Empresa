@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useGarage } from '../../context/GarageContext';
 import {
   ShieldCheck,
@@ -6,11 +6,15 @@ import {
   User,
   Mail,
   Briefcase,
-  Image,
+  Image as ImageIcon,
   Check,
   Sparkles,
   Users,
+  Upload,
+  Camera,
+  Trash2,
 } from 'lucide-react';
+import { compressImageFile } from '../../utils/imageCompressor';
 
 interface EditOwnerModalProps {
   isOpen: boolean;
@@ -57,6 +61,32 @@ export const EditOwnerModal: React.FC<EditOwnerModalProps> = ({ isOpen, onClose 
   const [title, setTitle] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
   const [selectedDriverId, setSelectedDriverId] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      showToast('Por favor seleccioná un archivo de imagen válido (JPG, PNG, WEBP).', 'error');
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      const compressedDataUrl = await compressImageFile(file, 400, 400, 0.88);
+      setAvatarUrl(compressedDataUrl);
+      showToast('Foto cargada y optimizada con éxito.', 'success');
+    } catch (err: unknown) {
+      console.error('Error al procesar foto:', err);
+      const msg = err instanceof Error ? err.message : 'Error al procesar la imagen.';
+      showToast(msg, 'error');
+    } finally {
+      setIsUploading(false);
+      e.target.value = '';
+    }
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -252,47 +282,135 @@ export const EditOwnerModal: React.FC<EditOwnerModalProps> = ({ isOpen, onClose 
             </div>
           </div>
 
-          {/* Foto de Perfil / Avatar */}
-          <div>
-            <label className="block text-xs font-bold text-[#172554] mb-1">
-              Foto de Perfil / Avatar
+          {/* Foto de Perfil / Subir Foto del Administrador */}
+          <div className="space-y-2">
+            <label className="block text-xs font-bold text-[#172554]">
+              Foto del Administrador
             </label>
-            <div className="relative mb-2">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                <Image className="w-4 h-4" />
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+
+            <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-center gap-4">
+              {/* Photo Preview Thumbnail */}
+              <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-slate-200 border-2 border-amber-300 shrink-0 shadow-sm group">
+                {avatarUrl ? (
+                  <img
+                    src={avatarUrl}
+                    alt="Foto del Administrador"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src =
+                        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=200&q=80';
+                    }}
+                  />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 bg-slate-100">
+                    <User className="w-8 h-8 text-slate-400" />
+                    <span className="text-[9px] text-slate-500 font-bold mt-1">Sin foto</span>
+                  </div>
+                )}
+                {isUploading && (
+                  <div className="absolute inset-0 bg-slate-900/60 flex items-center justify-center text-white text-[10px] font-bold">
+                    Cargando...
+                  </div>
+                )}
               </div>
-              <input
-                type="url"
-                value={avatarUrl}
-                onChange={(e) => setAvatarUrl(e.target.value)}
-                placeholder="URL de foto o imagen personalizada"
-                className="w-full pl-10 pr-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
-              />
+
+              {/* Action Buttons */}
+              <div className="flex-1 text-center sm:text-left space-y-2">
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
+                    className="px-3.5 py-2 rounded-xl bg-[#2563EB] hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition cursor-pointer disabled:opacity-50"
+                  >
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>{avatarUrl ? 'Cambiar Foto' : 'Subir Foto'}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
+                    className="px-3 py-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-semibold text-xs flex items-center gap-1.5 transition cursor-pointer"
+                    title="Tomar foto con cámara o abrir galería"
+                  >
+                    <Camera className="w-3.5 h-3.5 text-slate-600" />
+                    <span>Cámara / Galería</span>
+                  </button>
+
+                  {avatarUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setAvatarUrl('')}
+                      className="px-2.5 py-2 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold text-xs flex items-center gap-1 transition cursor-pointer"
+                      title="Quitar foto"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Quitar</span>
+                    </button>
+                  )}
+                </div>
+
+                <p className="text-[11px] text-slate-500">
+                  Subí una foto desde tu celular o computadora (JPG, PNG o WEBP). Se optimiza automáticamente.
+                </p>
+              </div>
             </div>
 
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-1">
-              <span className="text-[11px] text-slate-500 font-semibold shrink-0">
-                Sugerencias:
-              </span>
-              {AVATAR_PRESETS.map((preset, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => setAvatarUrl(preset.url)}
-                  className={`w-8 h-8 rounded-lg overflow-hidden border-2 shrink-0 transition cursor-pointer ${
-                    avatarUrl === preset.url
-                      ? 'border-[#2563EB] ring-2 ring-[#2563EB]/30'
-                      : 'border-slate-200 hover:border-slate-400'
-                  }`}
-                  title={preset.label}
-                >
-                  <img
-                    src={preset.url}
-                    alt={preset.label}
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-              ))}
+            {/* Alternativas: URL y Avatares Sugeridos */}
+            <div className="pt-1">
+              <details className="group text-xs text-slate-600">
+                <summary className="font-semibold text-[11px] text-[#2563EB] hover:text-blue-800 list-none flex items-center gap-1 cursor-pointer select-none">
+                  <span>▾ Opcional: Pegar enlace URL o elegir avatar de demostración</span>
+                </summary>
+                <div className="pt-2 space-y-2">
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                      <ImageIcon className="w-3.5 h-3.5" />
+                    </div>
+                    <input
+                      type="url"
+                      value={avatarUrl.startsWith('data:') ? '' : avatarUrl}
+                      onChange={(e) => setAvatarUrl(e.target.value)}
+                      placeholder="https://ejemplo.com/foto.jpg"
+                      className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20"
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-1">
+                    <span className="text-[10px] text-slate-500 font-semibold shrink-0">
+                      Avatares demo:
+                    </span>
+                    {AVATAR_PRESETS.map((preset, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setAvatarUrl(preset.url)}
+                        className={`w-7 h-7 rounded-lg overflow-hidden border-2 shrink-0 transition cursor-pointer ${
+                          avatarUrl === preset.url
+                            ? 'border-[#2563EB] ring-2 ring-[#2563EB]/30'
+                            : 'border-slate-200 hover:border-slate-400'
+                        }`}
+                        title={preset.label}
+                      >
+                        <img
+                          src={preset.url}
+                          alt={preset.label}
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </details>
             </div>
           </div>
 
