@@ -285,3 +285,47 @@ export interface NotificationSettings {
   permissionStatus: 'default' | 'granted' | 'denied' | 'unsupported';
 }
 
+// ==========================================
+// SOC 2 Type II & ISO/IEC 27001:2022 Types
+// ==========================================
+
+export type AuditActionCategory =
+  | 'AUTH'          // Logins, Logouts, Password changes, Role escalations
+  | 'ACCESS_CONTROL'// Driver reassignment, user modifications
+  | 'FLEET'         // Vehicle additions, updates, deletions
+  | 'COMPLIANCE'    // Document upload, verification, policies
+  | 'FINANCIAL'     // Fuel and operational expense entries
+  | 'INCIDENT'      // Safety reports, insurance claims
+  | 'DATA_INTEGRITY'// Backups, JSON exports, schema validations;
+
+export type AuditSeverity = 'INFO' | 'NOTICE' | 'WARNING' | 'CRITICAL';
+
+export interface AuditLogEntry {
+  id: string;
+  timestamp: string; // ISO 8601 UTC
+  userId: string;
+  userName: string;
+  userRole: UserRole;
+  action: string;
+  category: AuditActionCategory;
+  severity: AuditSeverity;
+  entityType?: 'vehicle' | 'driver' | 'expense' | 'maintenance' | 'document' | 'insurance' | 'incident' | 'security';
+  entityId?: string;
+  details: string;
+  ipAddress?: string;
+  userAgent?: string;
+  integrityHash?: string; // SHA-256 / HMAC for tamper-evidence (SOC 2 CC7.2)
+}
+
+export interface SecurityPolicySettings {
+  sessionTimeoutMinutes: number; // 15, 30, 60
+  requireMfaOnAdmin: boolean;
+  strictPasswordPolicy: boolean; // min 10 chars, symbols, numbers
+  auditLogRetentionDays: number; // 90, 180, 365
+  tamperProtectionEnabled: boolean;
+  dataClassificationLevel: 'Confidential' | 'Restricted' | 'Internal';
+  lastSecurityAuditDate: string;
+  encryptionStandard: string; // 'AES-256-GCM / TLS 1.3'
+}
+
+

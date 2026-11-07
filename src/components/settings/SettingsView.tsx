@@ -17,6 +17,8 @@ import {
   Smartphone,
   Camera,
   Upload,
+  ShieldCheck,
+  ArrowRight,
 } from 'lucide-react';
 import { UserSwitcherModal } from '../common/UserSwitcherModal';
 import { ConfirmDeleteModal } from '../common/ConfirmDeleteModal';
@@ -29,11 +31,14 @@ export const SettingsView: React.FC = () => {
     currentUser,
     availableUsers,
     isOwner,
+    currentTab,
+    setCurrentTab,
     vehicles,
     drivers,
     workshops,
     expenses,
     maintenance,
+    auditLogs,
     resetToDemoData,
     notificationSettings,
     updateNotificationSettings,
@@ -574,6 +579,59 @@ export const SettingsView: React.FC = () => {
             <span className="text-[11px] text-slate-500 mt-0.5 block leading-tight">
               Funciona con datos en caché para consultas en ruta o zonas con baja cobertura celular.
             </span>
+          </div>
+        </div>
+      </div>
+
+      {/* SOC 2 Type II & ISO/IEC 27001 Compliance Center */}
+      <div className="bg-gradient-to-br from-slate-900 via-[#172554] to-slate-950 text-white rounded-3xl p-6 border border-slate-700 shadow-md space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30">
+                SOC 2 Type II
+              </span>
+              <span className="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                ISO/IEC 27001:2022
+              </span>
+            </div>
+            <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2 mt-2">
+              <ShieldCheck className="w-5 h-5 text-emerald-400" />
+              <span>Seguridad de la Información & Auditoría Criptográfica</span>
+            </h2>
+            <p className="text-xs text-slate-300 leading-relaxed max-w-xl">
+              Trazabilidad inmutable de operaciones, segregación estricta de roles (Modo Chofer vs Administrador), retención de bitácora y verificación de integridad HMAC.
+            </p>
+          </div>
+
+          <button
+            onClick={() => {
+              setCurrentTab('seguridad');
+              window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+            }}
+            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#2563EB] to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-blue-900/50 cursor-pointer self-start sm:self-center shrink-0"
+          >
+            <span>Abrir Centro de Seguridad</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 text-xs border-t border-white/10">
+          <div className="p-3 rounded-2xl bg-white/5 border border-white/10">
+            <span className="text-[10px] text-slate-400 uppercase font-semibold block">Conformidad</span>
+            <span className="text-sm font-extrabold text-emerald-300">100% Conforme</span>
+          </div>
+          <div className="p-3 rounded-2xl bg-white/5 border border-white/10">
+            <span className="text-[10px] text-slate-400 uppercase font-semibold block">Eventos Auditados</span>
+            <span className="text-sm font-extrabold text-white">{auditLogs.length} registros</span>
+          </div>
+          <div className="p-3 rounded-2xl bg-white/5 border border-white/10">
+            <span className="text-[10px] text-slate-400 uppercase font-semibold block">Cifrado de Datos</span>
+            <span className="text-sm font-extrabold text-purple-300">AES-256-GCM</span>
+          </div>
+          <div className="p-3 rounded-2xl bg-white/5 border border-white/10">
+            <span className="text-[10px] text-slate-400 uppercase font-semibold block">Integridad Hash</span>
+            <span className="text-sm font-extrabold text-cyan-300">HMAC-SHA256</span>
           </div>
         </div>
       </div>

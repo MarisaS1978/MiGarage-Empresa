@@ -24,6 +24,7 @@ import { DocumentsView } from './components/enterprise/DocumentsView';
 import { IncidentsView } from './components/enterprise/IncidentsView';
 import { ReportsView } from './components/enterprise/ReportsView';
 import { SettingsView } from './components/settings/SettingsView';
+import { SecurityComplianceView } from './components/security/SecurityComplianceView';
 
 const MainAppContent: React.FC = () => {
   const {
@@ -116,6 +117,8 @@ const MainAppContent: React.FC = () => {
         return <IncidentsView onOpenQuickAction={() => handleOpenQuickAction('siniestro')} />;
       case 'informes':
         return <ReportsView />;
+      case 'seguridad':
+        return <SecurityComplianceView />;
       case 'configuracion':
         return <SettingsView />;
       default:

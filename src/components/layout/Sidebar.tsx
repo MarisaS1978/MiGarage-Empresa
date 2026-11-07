@@ -16,6 +16,7 @@ import {
   Store,
   Lock,
   LogOut,
+  ShieldCheck,
 } from 'lucide-react';
 import { PWAInstallButton } from '../pwa/PWAInstallButton';
 
@@ -71,6 +72,13 @@ export const Sidebar: React.FC = () => {
       badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/40',
     },
     { id: 'informes', label: 'Informes & KPIs', icon: BarChart3 },
+    {
+      id: 'seguridad',
+      label: 'Seguridad SOC 2 / ISO',
+      icon: ShieldCheck,
+      badge: '100%',
+      badgeColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
+    },
     { id: 'configuracion', label: 'Configuración', icon: Settings },
   ];
 

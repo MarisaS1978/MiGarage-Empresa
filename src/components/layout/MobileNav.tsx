@@ -17,6 +17,7 @@ import {
   AlertTriangle,
   Lock,
   LogOut,
+  ShieldCheck,
 } from 'lucide-react';
 import { PWAInstallButton } from '../pwa/PWAInstallButton';
 
@@ -112,6 +113,7 @@ export const MobileNav: React.FC = () => {
                 { id: 'documentos', label: 'Documentos', icon: FileText },
                 { id: 'siniestros', label: 'Siniestros', icon: AlertTriangle },
                 { id: 'informes', label: 'Informes & KPIs', icon: BarChart3 },
+                { id: 'seguridad', label: 'Seguridad SOC2/ISO', icon: ShieldCheck },
                 { id: 'configuracion', label: 'Configuración', icon: Settings },
               ].map((item) => {
                 const Icon = item.icon;
